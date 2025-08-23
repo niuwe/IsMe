@@ -130,6 +130,7 @@ void Server::handleChatMessage(QTcpSocket *socket, const QJsonObject &json)
     // 如果找到了接收者，則將原消息轉發給他
     if (destSocket) {
         destSocket->write(QJsonDocument(json).toJson());
+        sendMessage(destSocket,json);
     } else {
         // (可選) 處理用戶離線的情況，例如回覆發送者一條提示
         qDebug() << "User" << to << "not found or offline.";

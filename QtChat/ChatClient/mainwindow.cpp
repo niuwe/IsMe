@@ -22,7 +22,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// 在 mainwindow.cpp
 
 // 登錄按鈕點擊
 void MainWindow::on_loginButton_clicked()
@@ -35,7 +34,7 @@ void MainWindow::on_loginButton_clicked()
     loginJson["username"] = username;
     loginJson["password"] = password;
 
-    // 使用上一階段的 sendMessage 函數發送
+
     sendMessage(loginJson);
 }
 
@@ -69,7 +68,6 @@ void MainWindow::on_sendButton_clicked()
     ui->messageLineEdit->clear();
 }
 
-// 在 mainwindow.cpp 中
 void MainWindow::onReadyRead()
 {
     // 使用 QDataStream 來處理數據流
@@ -139,7 +137,7 @@ void MainWindow::sendMessage(const QJsonObject &json)
     m_tcpSocket->write(data);
 }
 
-// 在 mainwindow.cpp
+
 void MainWindow::handleLoginSuccess(const QJsonObject &json)
 {
     m_username = json["username"].toString();
