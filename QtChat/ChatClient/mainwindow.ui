@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>90</y>
+      <width>951</width>
+      <height>451</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="page1">
+     <widget class="QLineEdit" name="usernameLineEdit">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>110</y>
+        <width>381</width>
+        <height>27</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="passwordLineEdit">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>160</y>
+        <width>381</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::EchoMode::Password</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loginButton">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>220</y>
+        <width>99</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>log in</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="errorLabel">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>80</y>
+        <width>251</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>請輸入賬號和密碼</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page2">
+     <widget class="QListWidget" name="userListWidget">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>241</width>
+        <height>411</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="chatDisplayBrowser">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>10</y>
+        <width>541</width>
+        <height>351</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="messageLineEdit">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>380</y>
+        <width>401</width>
+        <height>27</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="sendButton">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>380</y>
+        <width>99</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Send</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="connectButton">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>630</y>
+      <width>99</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="statusLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>590</y>
+      <width>411</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1280</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
