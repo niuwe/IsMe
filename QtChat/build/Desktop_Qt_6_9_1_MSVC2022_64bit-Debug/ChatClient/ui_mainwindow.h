@@ -68,7 +68,7 @@ public:
         loginButton->setGeometry(QRect(350, 220, 99, 28));
         errorLabel = new QLabel(page1);
         errorLabel->setObjectName("errorLabel");
-        errorLabel->setGeometry(QRect(290, 80, 251, 21));
+        errorLabel->setGeometry(QRect(280, 70, 251, 21));
         errorLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
         stackedWidget->addWidget(page1);
         page2 = new QWidget();
@@ -95,7 +95,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 1280, 24));
+        menubar->setGeometry(QRect(0, 0, 1280, 21));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");

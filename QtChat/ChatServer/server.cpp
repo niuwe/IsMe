@@ -108,8 +108,8 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
         // 登錄失敗
         response["type"] = "login_failure";
         response["reason"] = "錯誤的用戶名或密碼，或用戶已登錄。";
-        //socket->write(QJsonDocument(response).toJson());
         sendMessage(socket, response);
+        qDebug() << "reponse: " << response;
     }
 }
 
@@ -130,10 +130,9 @@ void Server::handleChatMessage(QTcpSocket *socket, const QJsonObject &json)
 
     // 如果找到了接收者，則將原消息轉發給他
     if (destSocket) {
-        qDebug() << "Finded Receiver" ;
-        destSocket->write(QJsonDocument(json).toJson());
+        qDebug() << "Finded Receiver" << destSocket;
         sendMessage(destSocket,json);
-        qDebug() << "Finded Receiver" << json;
+        destSocket->write(QJsonDocument(json).toJson());
     } else {
         // (可選) 處理用戶離線的情況，例如回覆發送者一條提示
         qDebug() << "User" << to << "not found or offline.";

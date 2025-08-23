@@ -104,6 +104,7 @@ void MainWindow::onReadyRead()
 
             if (type == "login_success") {
                 handleLoginSuccess(json);
+                qDebug()<< "received lgon_success";
             } else if (type == "login_failure") {
                 handleLoginFailure(json);
             } else if (type == "user_list_update") {
@@ -167,7 +168,7 @@ void MainWindow::handleChatMessage(const QJsonObject &json)
 {
     QString from = json["from"].toString();
     QString content = json["content"].toString();
-    ui->chatDisplayBrowser->append(QString("[%1]: %2").arg(from).arg(content));
+    ui->chatDisplayBrowser->append(QString("[%1->Me]: %2").arg(from).arg(content));
 }
 
 void MainWindow::on_connectButton_clicked()
