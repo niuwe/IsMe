@@ -29,7 +29,9 @@ private:
     void handleLogin(QTcpSocket *socket, const QJsonObject &json);
     void handleChatMessage(QTcpSocket *socket, const QJsonObject &json);
     void sendMessage(QTcpSocket *socket, const QJsonObject &json);
-    void broadcastUserList(); // 一個新的輔助函數，用於廣播用戶列表
+    void broadcastUserList();
+    void handleUserListRequest(QTcpSocket *socket);
+
 };
 
 #endif // SERVER_H

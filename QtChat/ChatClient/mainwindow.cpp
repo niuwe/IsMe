@@ -1,19 +1,30 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+//#include "logindialog.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QTcpSocket *socket,
+                       const QString &username, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , m_tcpSocket(socket)
+    , m_username(username)
+    , m_currentBlockSize(0)
 {
     ui->setupUi(this);
-    this->setWindowTitle("Chat Client");
-    m_tcpSocket = new QTcpSocket(this);
+    this->setWindowTitle("Chat Client - " + m_username);
 
+    if (!m_tcpSocket) {
+        // 防禦性程式設計，如果傳入的 socket 是空的，就直接返回
+        qCritical() << "MainWindow received a null socket!";
+        return;
+    }
 
-    // 連接 socket 的信號到我們的槽
-    connect(m_tcpSocket, &QTcpSocket::connected, this, &MainWindow::onConnected);
-    connect(m_tcpSocket, &QTcpSocket::errorOccurred, this, &MainWindow::onErrorOccurred);
+    disconnect(m_tcpSocket, &QTcpSocket::readyRead, nullptr, nullptr);
     connect(m_tcpSocket, &QTcpSocket::readyRead, this, &MainWindow::onReadyRead);
+
+    QJsonObject requestJson;
+    requestJson["type"] = "request_user_list";
+    sendMessage(requestJson);
 
 }
 
@@ -23,25 +34,10 @@ MainWindow::~MainWindow()
 }
 
 
-// 登錄按鈕點擊
-void MainWindow::on_loginButton_clicked()
-{
-    QString username = ui->usernameLineEdit->text();
-    QString password = ui->passwordLineEdit->text();
-
-    QJsonObject loginJson;
-    loginJson["type"] = "login";
-    loginJson["username"] = username;
-    loginJson["password"] = password;
-
-
-    sendMessage(loginJson);
-}
-
 // 發送按鈕點擊
 void MainWindow::on_sendButton_clicked()
 {
-    qDebug() << "Send button clicked.";
+    qDebug() << "mainwondow: Send button clicked.";
     QString messageText = ui->messageLineEdit->text();
     if (messageText.isEmpty()) return;
 
@@ -60,7 +56,7 @@ void MainWindow::on_sendButton_clicked()
     messageJson["to"] = toUser;
     messageJson["content"] = messageText;
 
-    qDebug() << "Sending chat message to" << toUser;
+    qDebug() << "mainwindow: send chat message to" << toUser;
     sendMessage(messageJson);
 
     // 在自己的聊天窗口也顯示自己發送的消息
@@ -68,32 +64,42 @@ void MainWindow::on_sendButton_clicked()
     ui->messageLineEdit->clear();
 }
 
+// mainwindow.cpp
+
 void MainWindow::onReadyRead()
 {
-    // 使用 QDataStream 來處理數據流
+    qDebug() << "======= MainWindow::onReadyRead() triggered! =======";
     QDataStream in(m_tcpSocket);
-    in.setVersion(QDataStream::Qt_6_0);
+    in.setVersion(QDataStream::Qt_6_0); // 確保與伺服器/LoginDialog版本一致
 
-    // 循環讀取，防止粘包（一次性收到多個包）
-    while (true) {
-        // 首先嘗試讀取包頭（數據大小）
-        if (m_tcpSocket->bytesAvailable() < sizeof(qint32)) {
-            break; // 數據不夠讀一個完整的包頭，退出循環等待下次數據
+    // 迴圈處理，因為一次 readyRead 可能包含多個完整的包
+    while (true)
+    {
+        // 情況A：我們正在等待一個新的包頭
+        if (m_currentBlockSize == 0) {
+            // 檢查緩衝區中的數據是否足以讀取一個完整的包頭（4位元組）
+            if (m_tcpSocket->bytesAvailable() < sizeof(qint32)) {
+                qDebug() << "Not enough data for header, waiting...";
+                return; // 數據不夠，直接返回，等待下一次 readyRead
+            }
+            // 讀取包頭，並儲存到成員變數中
+            in >> m_currentBlockSize;
+            qDebug() << "Header received, expecting body size =" << m_currentBlockSize;
         }
 
-        qint32 blockSize;
-        in >> blockSize; // 從流中讀取包頭
-
-        // 接著嘗試讀取包體（JSON數據）
-        if (m_tcpSocket->bytesAvailable() < blockSize) {
-            // 數據不完整，需要回退指針並等待
-            // 為了簡化教程，我們暫不處理這種極端情況，假設包體總是一次性到達
-            // 在一個健壯的客戶端中，這裡需要更複雜的緩衝區邏輯
-            break;
+        // 情況B：我們正在等待包體
+        // 檢查緩衝區中的數據是否足以讀取一個完整的包體
+        if (m_tcpSocket->bytesAvailable() < m_currentBlockSize) {
+            qDebug() << "Data not complete for body, waiting... Have"
+                     << m_tcpSocket->bytesAvailable() << "bytes, but need" << m_currentBlockSize;
+            return; // 數據不夠，直接返回，等待下一次 readyRead
         }
 
-        //QByteArray jsonData;
-        QByteArray jsonData = m_tcpSocket->read(blockSize);// 讀取包體
+        // 讀取包體數據
+        QByteArray jsonData = m_tcpSocket->read(m_currentBlockSize);
+        qDebug() << "Read complete package (raw JSON):" << jsonData;
+
+        m_currentBlockSize = 0;
 
         // 解析並分發消息
         QJsonDocument doc = QJsonDocument::fromJson(jsonData);
@@ -101,17 +107,24 @@ void MainWindow::onReadyRead()
         {
             QJsonObject json = doc.object();
             QString type = json["type"].toString();
+            qDebug() << "Parsed JSON type:" << type;
 
-            if (type == "login_success") {
-                handleLoginSuccess(json);
-                qDebug()<< "received lgon_success";
-            } else if (type == "login_failure") {
-                handleLoginFailure(json);
-            } else if (type == "user_list_update") {
+            if (type == "user_list_update") {
                 handleUserListUpdate(json);
             } else if (type == "chat_message") {
                 handleChatMessage(json);
+            } else {
+                qDebug() << "Received unknown message type:" << type;
             }
+        }
+        else
+        {
+            qDebug() << "Failed to parse JSON data:" << jsonData;
+        }
+
+        // 檢查緩衝區是否還有剩餘的數據，如果有，迴圈將繼續處理下一個包
+        if (m_tcpSocket->bytesAvailable() == 0) {
+            break; // 緩衝區空了，退出迴圈
         }
     }
 }
@@ -139,26 +152,22 @@ void MainWindow::sendMessage(const QJsonObject &json)
 }
 
 
-void MainWindow::handleLoginSuccess(const QJsonObject &json)
-{
-    m_username = json["username"].toString();
-    this->setWindowTitle("Chat Client - " + m_username);
-    // 切換到聊天頁面
-    ui->stackedWidget->setCurrentIndex(1);
-}
-
-void MainWindow::handleLoginFailure(const QJsonObject &json)
-{
-    ui->errorLabel->setText(json["reason"].toString());
-}
-
 void MainWindow::handleUserListUpdate(const QJsonObject &json)
 {
+    qDebug() << "======= handleUserListUpdate() called! =======";
+    qDebug() << "Received user list JSON:" << json;
+
     ui->userListWidget->clear();
     QJsonArray users = json["users"].toArray();
+
+    qDebug() << "My username is:" << m_username << ". I will not be shown in the list.";
+    qDebug() << "Users to be added:" << users;
+
     for (const QJsonValue &user : users) {
         // 不在列表中顯示自己
         if (user.toString() != m_username) {
+            qDebug() << "Adding user:" << user.toString();
+
             ui->userListWidget->addItem(user.toString());
         }
     }
@@ -171,24 +180,3 @@ void MainWindow::handleChatMessage(const QJsonObject &json)
     ui->chatDisplayBrowser->append(QString("[%1->Me]: %2").arg(from).arg(content));
 }
 
-void MainWindow::on_connectButton_clicked()
-{
-    if (m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
-    {
-        ui->statusLineEdit->setText("Connecting...");
-        m_tcpSocket->connectToHost("127.0.0.1", 12345);
-    }
-}
-
-void MainWindow::onErrorOccurred(QAbstractSocket::SocketError socketError)
-{
-    Q_UNUSED(socketError); // 避免 "unused parameter" 警告
-    ui->statusLineEdit->setText("Error: " + m_tcpSocket->errorString());
-    qDebug() << "Socket Error:" << m_tcpSocket->errorString();
-}
-
-void MainWindow::onConnected()
-{
-    ui->statusLineEdit->setText("Connected to server!");
-    qDebug() << "Connected to server!";
-}

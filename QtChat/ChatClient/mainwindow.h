@@ -18,29 +18,28 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private slots:
-    // UI 按鈕的槽函數 (可以在 UI 設計器中右鍵點擊按鈕 -> Go to slot... 自動生成)
     void on_sendButton_clicked();
-    void on_loginButton_clicked();
-    // Socket 的槽函數
-    void onConnected();
-    void onErrorOccurred(QAbstractSocket::SocketError socketError);
+    // void onConnected();
+    // void onErrorOccurred(QAbstractSocket::SocketError socketError);
     void onReadyRead();
-    void on_connectButton_clicked();
+    //void on_connectButton_clicked();
 private:
     void sendMessage(const QJsonObject &json);
-    void handleLoginSuccess(const QJsonObject &json);
-    void handleLoginFailure(const QJsonObject &json);
+    // void handleLoginSuccess(const QJsonObject &json);
+    // void handleLoginFailure(const QJsonObject &json);
     void handleUserListUpdate(const QJsonObject &json);
     void handleChatMessage(const QJsonObject &json);
 
 public:
-    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    explicit MainWindow(QTcpSocket *socket,
+                        const QString &username, QWidget *parent = nullptr);
 
 private:
     Ui::MainWindow *ui;
     QTcpSocket *m_tcpSocket;
     QString m_username;
+    qint32 m_currentBlockSize;
 
 };
-#endif // MAINWINDOW_H
+#endif
