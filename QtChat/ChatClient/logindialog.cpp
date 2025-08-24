@@ -13,6 +13,12 @@ LoginDialog::LoginDialog(QTcpSocket *socket, QWidget *parent)
     connect(m_tcpSocket, &QTcpSocket::connected, this, &LoginDialog::onConnected);
     connect(m_tcpSocket, &QTcpSocket::errorOccurred, this, &LoginDialog::onErrorOccurred);
     connect(m_tcpSocket, &QTcpSocket::readyRead, this, &LoginDialog::onReadyRead);
+
+    if (m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
+    {
+        ui->statusLabel->setText("正在連線至伺服器...");
+        m_tcpSocket->connectToHost("127.0.0.1", 12345);
+    }
 }
 
 LoginDialog::~LoginDialog()
@@ -22,21 +28,28 @@ LoginDialog::~LoginDialog()
 
 void LoginDialog::on_loginButton_clicked()
 {
-    if (m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
+    if (m_tcpSocket->state() != QAbstractSocket::ConnectedState)
     {
         ui->statusLabel->setText("Connecting...");
         m_tcpSocket->connectToHost("127.0.0.1", 12345);
-    }
-    else
-    {
+
         QString username = ui->usernameLineEdit->text();
         QString password = ui->passwordLineEdit->text();
-
         QJsonObject loginJson;
         loginJson["type"] = "login";
         loginJson["username"] = username;
         loginJson["password"] = password;
 
+        sendMessage(loginJson);
+        //QMessageBox::critical(this, "錯誤", "尚未連線至伺服器，請稍候。");
+        return;
+    }else{
+        QString username = ui->usernameLineEdit->text();
+        QString password = ui->passwordLineEdit->text();
+        QJsonObject loginJson;
+        loginJson["type"] = "login";
+        loginJson["username"] = username;
+        loginJson["password"] = password;
         sendMessage(loginJson);
     }
 }
@@ -79,6 +92,10 @@ void LoginDialog::onReadyRead()
                 handleLoginSuccess(json);
             }else if(type == "login_failure"){
                 handleLoginFailure(json);
+            }else if (type == "registration_success") {
+                handleRegistrationSuccess(json);
+            } else if (type == "registration_failure") {
+                handleRegistrationFailure(json);
             }
 
         }
@@ -97,8 +114,11 @@ void LoginDialog::onConnected()
     loginJson["type"] = "login";
     loginJson["username"] = username;
     loginJson["password"] = password;
+    if((username == "") && (password == "")){
 
-    sendMessage(loginJson);
+
+    }else
+        sendMessage(loginJson);
 }
 
 void LoginDialog::sendMessage(const QJsonObject &json)
@@ -141,11 +161,57 @@ void LoginDialog::handleLoginFailure(const QJsonObject &json)
 {
     QMessageBox::warning(this, "登入失敗", json["reason"].toString());
     ui->passwordLineEdit->clear();
-    //ui->errorLabel->setText(json["reason"].toString());
 }
 
 
 QString LoginDialog::getUsername() const
 {
     return m_username;
+}
+
+void LoginDialog::on_registerButton_clicked()
+{
+    QString username = ui->usernameLineEdit->text();
+    QString password = ui->passwordLineEdit->text();
+    // 建立一個 "register" 類型的 JSON 訊息
+    QJsonObject registerJson;
+    registerJson["type"] = "register";
+    registerJson["username"] = username;
+    registerJson["password"] = password;
+
+    if (m_tcpSocket->state() != QAbstractSocket::ConnectedState) {
+        ui->statusLabel->setText("Connecting...");
+        m_tcpSocket->connectToHost("127.0.0.1", 12345);
+
+        sendMessage(registerJson);
+        //QMessageBox::critical(this, "錯誤", "尚未連線至伺服器，請稍候。");
+        return;
+    }else if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "註冊失敗", "使用者名稱和密碼不能為空。");
+        return;
+    }else{
+        sendMessage(registerJson);
+    }
+}
+
+void LoginDialog::handleRegistrationSuccess(const QJsonObject &json)
+{
+    QMessageBox::information(this, "註冊成功", "您的帳號已成功註冊，現在可以使用它登入了。");
+}
+
+void LoginDialog::handleRegistrationFailure(const QJsonObject &json)
+{
+    QString reason = json["reason"].toString();
+    QMessageBox::warning(this, "註冊失敗", reason);
+}
+
+void LoginDialog::on_showPasswordCheckBox_toggled(bool checked)
+{
+    if (checked) {
+        // 如果勾選，將密碼框的 EchoMode 設為 Normal (正常顯示文字)
+        ui->passwordLineEdit->setEchoMode(QLineEdit::Normal);
+    } else {
+        // 如果未勾選，設為 Password (顯示為 ●●●)
+        ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
+    }
 }

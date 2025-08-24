@@ -27,6 +27,9 @@ private slots:
     void onConnected();
     void onErrorOccurred(QAbstractSocket::SocketError socketError);
     void onReadyRead();
+    void on_registerButton_clicked();
+    void on_showPasswordCheckBox_toggled(bool checked);
+
 private:
     Ui::LoginDialog *ui;
     QTcpSocket *m_tcpSocket;
@@ -36,7 +39,8 @@ private:
     void sendMessage(const QJsonObject &json);
     void handleLoginSuccess(const QJsonObject &json);
     void handleLoginFailure(const QJsonObject &json);
-
+    void handleRegistrationSuccess(const QJsonObject &json);
+    void handleRegistrationFailure(const QJsonObject &json);
 };
 
 #endif // LOGINDIALOG_H

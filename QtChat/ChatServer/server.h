@@ -24,6 +24,7 @@ private:
     QTcpServer *m_tcpServer;
     QMap<QTcpSocket*, QString> m_clients;
     QSet<QString> m_loggedUsers;
+    QMap<QString, QString> m_userCredentials;
 
 private:
     void handleLogin(QTcpSocket *socket, const QJsonObject &json);
@@ -31,6 +32,7 @@ private:
     void sendMessage(QTcpSocket *socket, const QJsonObject &json);
     void broadcastUserList();
     void handleUserListRequest(QTcpSocket *socket);
+    void handleRegistration(QTcpSocket *socket, const QJsonObject &json);
 
 };
 
