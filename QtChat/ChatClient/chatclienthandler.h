@@ -10,6 +10,8 @@ class ChatClientHandler : public QObject
     Q_OBJECT
 public:
     explicit ChatClientHandler(QTcpSocket *socket, QObject *parent = nullptr);
+    void connectToServer(const QString &host, quint16 port);
+    bool isConnected() const;
 
 public slots:
     void sendMessage(const QJsonObject &json);
@@ -17,7 +19,6 @@ public slots:
 signals:
     void jsonMessageReceived(const QJsonObject &json);
     void connected();
-    void disconnected();
     void errorOccurred(const QString &errorString);
 
 private slots:

@@ -43,7 +43,6 @@ template <> constexpr inline auto ChatClientHandler::qt_create_metaobjectdata<qt
         "",
         "json",
         "connected",
-        "disconnected",
         "errorOccurred",
         "errorString",
         "sendMessage",
@@ -60,21 +59,19 @@ template <> constexpr inline auto ChatClientHandler::qt_create_metaobjectdata<qt
         }}),
         // Signal 'connected'
         QtMocHelpers::SignalData<void()>(4, 2, QMC::AccessPublic, QMetaType::Void),
-        // Signal 'disconnected'
-        QtMocHelpers::SignalData<void()>(5, 2, QMC::AccessPublic, QMetaType::Void),
         // Signal 'errorOccurred'
-        QtMocHelpers::SignalData<void(const QString &)>(6, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 7 },
+        QtMocHelpers::SignalData<void(const QString &)>(5, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 6 },
         }}),
         // Slot 'sendMessage'
-        QtMocHelpers::SlotData<void(const QJsonObject &)>(8, 2, QMC::AccessPublic, QMetaType::Void, {{
+        QtMocHelpers::SlotData<void(const QJsonObject &)>(7, 2, QMC::AccessPublic, QMetaType::Void, {{
             { QMetaType::QJsonObject, 3 },
         }}),
         // Slot 'onReadyRead'
-        QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPrivate, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'onErrorOccurred'
-        QtMocHelpers::SlotData<void(QAbstractSocket::SocketError)>(10, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { 0x80000000 | 11, 12 },
+        QtMocHelpers::SlotData<void(QAbstractSocket::SocketError)>(9, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { 0x80000000 | 10, 11 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -101,18 +98,17 @@ void ChatClientHandler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         switch (_id) {
         case 0: _t->jsonMessageReceived((*reinterpret_cast< std::add_pointer_t<QJsonObject>>(_a[1]))); break;
         case 1: _t->connected(); break;
-        case 2: _t->disconnected(); break;
-        case 3: _t->errorOccurred((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 4: _t->sendMessage((*reinterpret_cast< std::add_pointer_t<QJsonObject>>(_a[1]))); break;
-        case 5: _t->onReadyRead(); break;
-        case 6: _t->onErrorOccurred((*reinterpret_cast< std::add_pointer_t<QAbstractSocket::SocketError>>(_a[1]))); break;
+        case 2: _t->errorOccurred((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 3: _t->sendMessage((*reinterpret_cast< std::add_pointer_t<QJsonObject>>(_a[1]))); break;
+        case 4: _t->onReadyRead(); break;
+        case 5: _t->onErrorOccurred((*reinterpret_cast< std::add_pointer_t<QAbstractSocket::SocketError>>(_a[1]))); break;
         default: ;
         }
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
-        case 6:
+        case 5:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -126,9 +122,7 @@ void ChatClientHandler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
             return;
         if (QtMocHelpers::indexOfMethod<void (ChatClientHandler::*)()>(_a, &ChatClientHandler::connected, 1))
             return;
-        if (QtMocHelpers::indexOfMethod<void (ChatClientHandler::*)()>(_a, &ChatClientHandler::disconnected, 2))
-            return;
-        if (QtMocHelpers::indexOfMethod<void (ChatClientHandler::*)(const QString & )>(_a, &ChatClientHandler::errorOccurred, 3))
+        if (QtMocHelpers::indexOfMethod<void (ChatClientHandler::*)(const QString & )>(_a, &ChatClientHandler::errorOccurred, 2))
             return;
     }
 }
@@ -152,14 +146,14 @@ int ChatClientHandler::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 6;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 6;
     }
     return _id;
 }
@@ -177,14 +171,8 @@ void ChatClientHandler::connected()
 }
 
 // SIGNAL 2
-void ChatClientHandler::disconnected()
-{
-    QMetaObject::activate(this, &staticMetaObject, 2, nullptr);
-}
-
-// SIGNAL 3
 void ChatClientHandler::errorOccurred(const QString & _t1)
 {
-    QMetaObject::activate<void>(this, &staticMetaObject, 3, nullptr, _t1);
+    QMetaObject::activate<void>(this, &staticMetaObject, 2, nullptr, _t1);
 }
 QT_WARNING_POP

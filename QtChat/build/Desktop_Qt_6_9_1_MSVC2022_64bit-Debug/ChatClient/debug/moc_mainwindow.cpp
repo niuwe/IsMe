@@ -41,14 +41,17 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         "MainWindow",
         "on_sendButton_clicked",
         "",
-        "onReadyRead"
+        "onJsonReceived",
+        "json"
     };
 
     QtMocHelpers::UintData qt_methods {
         // Slot 'on_sendButton_clicked'
         QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onReadyRead'
-        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onJsonReceived'
+        QtMocHelpers::SlotData<void(const QJsonObject &)>(3, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::QJsonObject, 4 },
+        }}),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -73,11 +76,10 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: _t->on_sendButton_clicked(); break;
-        case 1: _t->onReadyRead(); break;
+        case 1: _t->onJsonReceived((*reinterpret_cast< std::add_pointer_t<QJsonObject>>(_a[1]))); break;
         default: ;
         }
     }
-    (void)_a;
 }
 
 const QMetaObject *MainWindow::metaObject() const

@@ -2,22 +2,23 @@
 #include "ui_logindialog.h"
 #include <QMessageBox>
 
-LoginDialog::LoginDialog(QTcpSocket *socket, QWidget *parent)
+LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::LoginDialog)
-    , m_tcpSocket(socket)
+    , m_handler(handler)
 {
     ui->setupUi(this);
     this->setWindowTitle("Login Client");
 
-    connect(m_tcpSocket, &QTcpSocket::connected, this, &LoginDialog::onConnected);
-    connect(m_tcpSocket, &QTcpSocket::errorOccurred, this, &LoginDialog::onErrorOccurred);
-    connect(m_tcpSocket, &QTcpSocket::readyRead, this, &LoginDialog::onReadyRead);
+    connect(m_handler, &ChatClientHandler::connected, this, &LoginDialog::onConnected);
+    connect(m_handler, &ChatClientHandler::errorOccurred, this, &LoginDialog::onError);
+    connect(m_handler, &ChatClientHandler::jsonMessageReceived,
+            this, &LoginDialog::onJsonReceived);
 
-    if (m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
+    if (!(m_handler->isConnected()))
     {
-        ui->statusLabel->setText("正在連線至伺服器...");
-        m_tcpSocket->connectToHost("127.0.0.1", 12345);
+        ui->statusLabel->setText("Connecting to server...");
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
@@ -28,73 +29,27 @@ LoginDialog::~LoginDialog()
 
 void LoginDialog::on_loginButton_clicked()
 {
-    if (m_tcpSocket->state() != QAbstractSocket::ConnectedState)
-    {
-        ui->statusLabel->setText("Connecting...");
-        m_tcpSocket->connectToHost("127.0.0.1", 12345);
+    QString username = ui->usernameLineEdit->text();
+    QString password = ui->passwordLineEdit->text();
 
-        QString username = ui->usernameLineEdit->text();
-        QString password = ui->passwordLineEdit->text();
-        QJsonObject loginJson;
-        loginJson["type"] = "login";
-        loginJson["username"] = username;
-        loginJson["password"] = password;
-
-        sendMessage(loginJson);
-        //QMessageBox::critical(this, "錯誤", "尚未連線至伺服器，請稍候。");
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "Login failed",
+                            "Username and password cannot be empty.");
         return;
-    }else{
-        QString username = ui->usernameLineEdit->text();
-        QString password = ui->passwordLineEdit->text();
-        QJsonObject loginJson;
-        loginJson["type"] = "login";
-        loginJson["username"] = username;
-        loginJson["password"] = password;
-        sendMessage(loginJson);
     }
-}
 
-void LoginDialog::onReadyRead()
-{
-    // 使用 QDataStream 來處理數據流
-    QDataStream in(m_tcpSocket);
-    in.setVersion(QDataStream::Qt_6_0);
+    QJsonObject loginJson;
+    loginJson["type"] = "login";
+    loginJson["username"] = username;
+    loginJson["password"] = password;
+    m_pendingMessage = loginJson;
 
-    // 循環讀取，防止粘包（一次性收到多個包）
-    while (true) {
-        // 首先嘗試讀取包頭（數據大小）
-        if (m_tcpSocket->bytesAvailable() < sizeof(qint32)) {
-            break; // 數據不夠讀一個完整的包頭，退出循環等待下次數據
-        }
-
-        qint32 blockSize;
-        in >> blockSize; // 從流中讀取包頭
-
-        // 接著嘗試讀取包體（JSON數據）
-        if (m_tcpSocket->bytesAvailable() < blockSize) {
-            break;
-        }
-
-        QByteArray jsonData = m_tcpSocket->read(blockSize);// 讀取包體
-        qDebug() << "LoginDialog: received message is:" << jsonData;
-        // 解析並分發消息
-        QJsonDocument doc = QJsonDocument::fromJson(jsonData);
-        if(doc.isObject())
-        {
-            QJsonObject json = doc.object();
-            QString type = json["type"].toString();
-
-            if (type == "login_success") {
-                handleLoginSuccess(json);
-            }else if(type == "login_failure"){
-                handleLoginFailure(json);
-            }else if (type == "registration_success") {
-                handleRegistrationSuccess();
-            } else if (type == "registration_failure") {
-                handleRegistrationFailure(json);
-            }
-
-        }
+    if (m_handler->isConnected())
+    {
+        onConnected();
+    }else{
+        ui->statusLabel->setText("Connecting to server...");
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
@@ -103,62 +58,20 @@ void LoginDialog::onConnected()
     ui->statusLabel->setText("Connected to server!");
     qDebug() << "LoginDialog: Connected to server!";
 
-    QString username = ui->usernameLineEdit->text();
-    QString password = ui->passwordLineEdit->text();
-
-    QJsonObject loginJson;
-    loginJson["type"] = "login";
-    loginJson["username"] = username;
-    loginJson["password"] = password;
-    if((username == "") && (password == "")){
-
-
-    }else
-        sendMessage(loginJson);
-}
-
-void LoginDialog::sendMessage(const QJsonObject &json)
-{
-
-    if (m_tcpSocket->state() != QAbstractSocket::ConnectedState) {
-        // 可以添加错误提示，例如 "尚未连接到服务器"
-        return;
+    // 检查是否有待发送的消息
+    if (!m_pendingMessage.isEmpty()) {
+        qDebug() << "Sending pending message:" << m_pendingMessage;
+        m_handler->sendMessage(m_pendingMessage);
+        m_pendingMessage = QJsonObject(); // 发送后立即清空，防止重发
     }
-
-    // 1. 将 JSON 对象转换为 QByteArray
-    QByteArray data = QJsonDocument(json).toJson(QJsonDocument::Compact);
-
-    // 2. 获取数据长度并转换为 QByteArray
-    qint32 dataSize = data.size();
-    QByteArray header;
-    QDataStream stream(&header, QIODevice::WriteOnly);
-    stream << dataSize;
-
-    // 3. 发送包头，然后发送包体
-    m_tcpSocket->write(header);
-    m_tcpSocket->write(data);
 }
 
-void LoginDialog::handleLoginSuccess(const QJsonObject &json)
+void LoginDialog::onError(const QString &errorString)
 {
-    m_username = json["username"].toString();
-    accept();
-    qDebug()<< "LoginDialog: log in successed!";
+    ui->statusLabel->setText("Error: " + errorString);
+    QMessageBox::warning(this, "Connection failed", "Error: " + errorString);
+    qDebug() << "Error from handler:" << errorString;
 }
-
-void LoginDialog::onErrorOccurred(QAbstractSocket::SocketError socketError)
-{
-    Q_UNUSED(socketError); // 避免 "unused parameter" 警告
-    ui->statusLabel->setText("Error: " + m_tcpSocket->errorString());
-    qDebug() << "Socket Error:" << m_tcpSocket->errorString();
-}
-
-void LoginDialog::handleLoginFailure(const QJsonObject &json)
-{
-    QMessageBox::warning(this, "登入失敗", json["reason"].toString());
-    ui->passwordLineEdit->clear();
-}
-
 
 QString LoginDialog::getUsername() const
 {
@@ -169,45 +82,54 @@ void LoginDialog::on_registerButton_clicked()
 {
     QString username = ui->usernameLineEdit->text();
     QString password = ui->passwordLineEdit->text();
-    // 建立一個 "register" 類型的 JSON 訊息
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "Registration failed",
+                             "Username and password cannot be empty.");
+        return;
+    }
+
     QJsonObject registerJson;
     registerJson["type"] = "register";
     registerJson["username"] = username;
     registerJson["password"] = password;
+    m_pendingMessage = registerJson;
 
-    if (m_tcpSocket->state() != QAbstractSocket::ConnectedState) {
-        ui->statusLabel->setText("Connecting...");
-        m_tcpSocket->connectToHost("127.0.0.1", 12345);
-
-        sendMessage(registerJson);
-        //QMessageBox::critical(this, "錯誤", "尚未連線至伺服器，請稍候。");
-        return;
-    }else if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "註冊失敗", "使用者名稱和密碼不能為空。");
-        return;
+    if (m_handler->isConnected())
+    {
+        onConnected();
     }else{
-        sendMessage(registerJson);
+        ui->statusLabel->setText("Connecting to server...");
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
-void LoginDialog::handleRegistrationSuccess()
-{
-    QMessageBox::information(this, "註冊成功", "您的帳號已成功註冊，現在可以使用它登入了。");
-}
-
-void LoginDialog::handleRegistrationFailure(const QJsonObject &json)
-{
-    QString reason = json["reason"].toString();
-    QMessageBox::warning(this, "註冊失敗", reason);
-}
 
 void LoginDialog::on_showPasswordCheckBox_toggled(bool checked)
 {
     if (checked) {
-        // 如果勾選，將密碼框的 EchoMode 設為 Normal (正常顯示文字)
         ui->passwordLineEdit->setEchoMode(QLineEdit::Normal);
     } else {
-        // 如果未勾選，設為 Password (顯示為 ●●●)
         ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
+    }
+}
+
+// 統一處理所有收到的 JSON 消息
+void LoginDialog::onJsonReceived(const QJsonObject &json)
+{
+    QString type = json["type"].toString();
+
+    if (type == "login_success") {
+        m_username = json["username"].toString();
+        qDebug()<< "LoginDialog: log in successed!";
+        accept(); // 關閉對話框，並返回 QDialog::Accepted
+    } else if (type == "login_failure") {
+        QMessageBox::warning(this, "Login Failed", json["reason"].toString());
+        ui->passwordLineEdit->clear();
+    } else if (type == "registration_success") {
+        QMessageBox::information(this, "Registration Successful",
+                                 "Your account has been successfully "
+                                 "registered and can now be used to log in.");
+    } else if (type == "registration_failure") {
+        QMessageBox::warning(this, "Registration Failed", json["reason"].toString());
     }
 }

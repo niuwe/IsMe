@@ -578,6 +578,7 @@ release\moc_logindialog.cpp: ..\..\..\ChatClient\logindialog.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonobject.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
+		..\..\..\ChatClient\chatclienthandler.h \
 		release\moc_predefs.h \
 		C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe
 	C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/NWZ/Documents/GitHub/IsMe/QtChat/build/Desktop_Qt_6_9_1_MSVC2022_64bit-Debug/ChatClient/release/moc_predefs.h -IC:/qt6.9/6.9.1/msvc2022_64/mkspecs/win32-msvc -IC:/Users/NWZ/Documents/GitHub/IsMe/QtChat/ChatClient -IC:/qt6.9/6.9.1/msvc2022_64/include -IC:/qt6.9/6.9.1/msvc2022_64/include/QtWidgets -IC:/qt6.9/6.9.1/msvc2022_64/include/QtGui -IC:/qt6.9/6.9.1/msvc2022_64/include/QtNetwork -IC:/qt6.9/6.9.1/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\..\ChatClient\logindialog.h -o release\moc_logindialog.cpp
@@ -821,6 +822,7 @@ release\moc_mainwindow.cpp: ..\..\..\ChatClient\mainwindow.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonobject.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
+		..\..\..\ChatClient\chatclienthandler.h \
 		release\moc_predefs.h \
 		C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe
 	C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/NWZ/Documents/GitHub/IsMe/QtChat/build/Desktop_Qt_6_9_1_MSVC2022_64bit-Debug/ChatClient/release/moc_predefs.h -IC:/qt6.9/6.9.1/msvc2022_64/mkspecs/win32-msvc -IC:/Users/NWZ/Documents/GitHub/IsMe/QtChat/ChatClient -IC:/qt6.9/6.9.1/msvc2022_64/include -IC:/qt6.9/6.9.1/msvc2022_64/include/QtWidgets -IC:/qt6.9/6.9.1/msvc2022_64/include/QtGui -IC:/qt6.9/6.9.1/msvc2022_64/include/QtNetwork -IC:/qt6.9/6.9.1/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\..\ChatClient\mainwindow.h -o release\moc_mainwindow.cpp
@@ -1243,6 +1245,7 @@ release\logindialog.obj: ..\..\..\ChatClient\logindialog.cpp ..\..\..\ChatClient
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonobject.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
+		..\..\..\ChatClient\chatclienthandler.h \
 		ui_logindialog.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\QMessageBox \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qmessagebox.h \
@@ -1487,10 +1490,10 @@ release\main.obj: ..\..\..\ChatClient\main.cpp ..\..\..\ChatClient\mainwindow.h 
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonobject.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
+		..\..\..\ChatClient\chatclienthandler.h \
 		..\..\..\ChatClient\logindialog.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\QDialog \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qdialog.h \
-		..\..\..\ChatClient\chatclienthandler.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\QApplication \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qapplication.h
 
@@ -1733,8 +1736,11 @@ release\mainwindow.obj: ..\..\..\ChatClient\mainwindow.cpp ..\..\..\ChatClient\m
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonobject.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
-		ui_mainwindow.h \
-		..\..\..\ChatClient\chatclienthandler.h
+		..\..\..\ChatClient\chatclienthandler.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qmessagebox.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qdialog.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qdialogbuttonbox.h \
+		ui_mainwindow.h
 
 release\moc_chatclienthandler.obj: release\moc_chatclienthandler.cpp 
 

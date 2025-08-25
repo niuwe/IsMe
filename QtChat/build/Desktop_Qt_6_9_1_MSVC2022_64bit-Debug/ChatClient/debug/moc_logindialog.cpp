@@ -41,32 +41,34 @@ template <> constexpr inline auto LoginDialog::qt_create_metaobjectdata<qt_meta_
         "LoginDialog",
         "on_loginButton_clicked",
         "",
-        "onConnected",
-        "onErrorOccurred",
-        "QAbstractSocket::SocketError",
-        "socketError",
-        "onReadyRead",
         "on_registerButton_clicked",
         "on_showPasswordCheckBox_toggled",
-        "checked"
+        "checked",
+        "onConnected",
+        "onJsonReceived",
+        "json",
+        "onError",
+        "errorString"
     };
 
     QtMocHelpers::UintData qt_methods {
         // Slot 'on_loginButton_clicked'
         QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onConnected'
-        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onErrorOccurred'
-        QtMocHelpers::SlotData<void(QAbstractSocket::SocketError)>(4, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { 0x80000000 | 5, 6 },
-        }}),
-        // Slot 'onReadyRead'
-        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'on_registerButton_clicked'
-        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'on_showPasswordCheckBox_toggled'
-        QtMocHelpers::SlotData<void(bool)>(9, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Bool, 10 },
+        QtMocHelpers::SlotData<void(bool)>(4, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Bool, 5 },
+        }}),
+        // Slot 'onConnected'
+        QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onJsonReceived'
+        QtMocHelpers::SlotData<void(const QJsonObject &)>(7, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::QJsonObject, 8 },
+        }}),
+        // Slot 'onError'
+        QtMocHelpers::SlotData<void(const QString &)>(9, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::QString, 10 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -92,24 +94,12 @@ void LoginDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: _t->on_loginButton_clicked(); break;
-        case 1: _t->onConnected(); break;
-        case 2: _t->onErrorOccurred((*reinterpret_cast< std::add_pointer_t<QAbstractSocket::SocketError>>(_a[1]))); break;
-        case 3: _t->onReadyRead(); break;
-        case 4: _t->on_registerButton_clicked(); break;
-        case 5: _t->on_showPasswordCheckBox_toggled((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
+        case 1: _t->on_registerButton_clicked(); break;
+        case 2: _t->on_showPasswordCheckBox_toggled((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
+        case 3: _t->onConnected(); break;
+        case 4: _t->onJsonReceived((*reinterpret_cast< std::add_pointer_t<QJsonObject>>(_a[1]))); break;
+        case 5: _t->onError((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         default: ;
-        }
-    }
-    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        switch (_id) {
-        default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
-        case 2:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
-            case 0:
-                *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType::fromType< QAbstractSocket::SocketError >(); break;
-            }
-            break;
         }
     }
 }
@@ -139,7 +129,7 @@ int LoginDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         if (_id < 6)
-            qt_static_metacall(this, _c, _id, _a);
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
         _id -= 6;
     }
     return _id;

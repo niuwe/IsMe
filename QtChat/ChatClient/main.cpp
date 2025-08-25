@@ -10,19 +10,13 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QTcpSocket *socket = new QTcpSocket();
     ChatClientHandler *handler = new ChatClientHandler(socket);
-
     LoginDialog loginDialog(handler);
 
-    // 3. 執行登入對話方塊
     if (loginDialog.exec() == QDialog::Accepted)
     {
-        // 4. 登入成功，獲取使用者名稱
-       QString username = loginDialog.getUsername();
-
-        // 5. 建立主視窗，並將同一個 socket 的指標和使用者名稱傳遞進去
-        MainWindow w(socket, username);
+        QString username = loginDialog.getUsername();
+        MainWindow w(handler, username);
         w.show();
-
         return a.exec();
     }
     else

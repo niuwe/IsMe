@@ -9,8 +9,19 @@ ChatClientHandler::ChatClientHandler(QTcpSocket *socket, QObject *parent)
 {
     connect(m_tcpSocket, &QTcpSocket::readyRead, this, &ChatClientHandler::onReadyRead);
     connect(m_tcpSocket, &QTcpSocket::connected, this, &ChatClientHandler::connected);
-    connect(m_tcpSocket, &QTcpSocket::disconnected, this, &ChatClientHandler::disconnected);
     connect(m_tcpSocket, &QTcpSocket::errorOccurred, this, &ChatClientHandler::onErrorOccurred);
+}
+
+void ChatClientHandler::connectToServer(const QString &host, quint16 port)
+{
+    if (m_tcpSocket->state() == QAbstractSocket::UnconnectedState) {
+        m_tcpSocket->connectToHost(host, port);
+    }
+}
+
+bool ChatClientHandler::isConnected() const
+{
+    return m_tcpSocket->state() == QAbstractSocket::ConnectedState;
 }
 
 // 这就是那个【唯一且正确】的 onReadyRead 实现

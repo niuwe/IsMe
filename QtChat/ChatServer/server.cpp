@@ -218,7 +218,8 @@ void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
     if (m_userCredentials.contains(username)) {
         // 使用者名稱已被佔用
         response["type"] = "registration_failure";
-        response["reason"] = "此使用者名稱已被註冊，請更換一個。";
+        response["reason"] = "This username has already been registered."
+                             " Please change it.";
         qDebug() << "Registration failed for" << username << ": Username taken.";
     } else {
         // 註冊成功，將新帳號密碼存入 QMap

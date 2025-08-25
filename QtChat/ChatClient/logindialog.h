@@ -26,23 +26,20 @@ public:
 
 private slots:
     void on_loginButton_clicked();
-    void onConnected();
-    void onErrorOccurred(QAbstractSocket::SocketError socketError);
-    void onReadyRead();
+    //void onErrorOccurred(QAbstractSocket::SocketError socketError);
+    //void onReadyRead();
     void on_registerButton_clicked();
     void on_showPasswordCheckBox_toggled(bool checked);
 
-private:
-    Ui::LoginDialog *ui;
-    QTcpSocket *m_tcpSocket;
-    QString m_username;
+    void onConnected();
+    void onJsonReceived(const QJsonObject &json);
+    void onError(const QString &errorString);
 
 private:
-    void sendMessage(const QJsonObject &json);
-    void handleLoginSuccess(const QJsonObject &json);
-    void handleLoginFailure(const QJsonObject &json);
-    void handleRegistrationSuccess();
-    void handleRegistrationFailure(const QJsonObject &json);
+    Ui::LoginDialog *ui;
+    ChatClientHandler *m_handler;
+    QString m_username;
+    QJsonObject m_pendingMessage;
 };
 
 #endif // LOGINDIALOG_H
