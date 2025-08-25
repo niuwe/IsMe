@@ -8,6 +8,7 @@ HistoryManager::HistoryManager(const QString &currentUsername, QObject *parent)
     : QObject(parent)
 {
     // 創建存儲歷史記錄的根文件夾，例如在用戶的應用數據目錄下
+    // C:\Users\***\AppData\Roaming\ChatClient\history
     QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     m_basePath = dataPath + "/history/" + currentUsername;
 

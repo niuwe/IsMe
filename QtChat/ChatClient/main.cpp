@@ -1,17 +1,21 @@
+// client/main.cpp - 修改后
 #include "mainwindow.h"
 #include "logindialog.h"
 #include "chatclienthandler.h"
-
 #include <QApplication>
-#include <QTcpSocket> // 引入標頭檔
+#include <QTcpSocket>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QTcpSocket *socket = new QTcpSocket();
-    ChatClientHandler *handler = new ChatClientHandler(socket);
-    LoginDialog loginDialog(handler);
 
+    QTcpSocket *socket = new QTcpSocket(&a);
+    ChatClientHandler *handler = new ChatClientHandler(socket, &a);
+
+
+    handler->connectToServer("127.0.0.1", 12345);
+
+    LoginDialog loginDialog(handler);
     if (loginDialog.exec() == QDialog::Accepted)
     {
         QString username = loginDialog.getUsername();
@@ -21,6 +25,6 @@ int main(int argc, char *argv[])
     }
     else
     {
-        return 0; // 登入失敗或取消，程式退出
+        return 0;
     }
 }

@@ -8,8 +8,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include "chatclienthandler.h"
-#include "historymanager.h"
+class ChatClientHandler;
+class HistoryManager;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainWindow;}

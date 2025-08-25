@@ -1,5 +1,7 @@
 #include "mainwindow.h"
-#include "qmessagebox.h"
+// #include "qmessagebox.h"
+#include "historymanager.h"
+#include "chatclienthandler.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
 
@@ -8,6 +10,7 @@ MainWindow::MainWindow(ChatClientHandler *handler,
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_handler(handler)
+    , m_historyManager(new HistoryManager(username, this))
     , m_username(username)
 
 {
@@ -38,7 +41,6 @@ void MainWindow::onUserSelectionChanged(QListWidgetItem *current, QListWidgetIte
 {
     Q_UNUSED(previous);
     if (!current) {
-        // 如果沒有選中項（例如列表為空），則清空並禁用
         m_currentPeer.clear();
         ui->chatDisplayBrowser->clear();
         ui->messageLineEdit->setEnabled(false);
@@ -101,11 +103,8 @@ void MainWindow::on_sendButton_clicked()
 //統一處理所有收到的 JSON 消息
 void MainWindow::onJsonReceived(const QJsonObject &json)
 {
-    qDebug() << "[DEBUG] onJsonReceived triggered. Received JSON:" << json;
 
     QString type = json["type"].toString();
-    qDebug() << "MainWindow received JSON type:" << type;
-
     if (type == "user_list_update") {
         handleUserListUpdate(json);
     } else if (type == "chat_message") {
@@ -117,45 +116,54 @@ void MainWindow::onJsonReceived(const QJsonObject &json)
     }
 }
 
+// 在 mainwindow.cpp 中
+
 void MainWindow::handleUserListUpdate(const QJsonObject &json)
 {
-    qDebug() << "[DEBUG] handleUserListUpdate triggered. Updating user list...";
     QJsonArray users = json["users"].toArray();
-    QString previouslySelectedUser = "";
-    if (ui->userListWidget->currentItem()) {
-        previouslySelectedUser = ui->userListWidget->currentItem()->text();
-    }
+    QString previouslySelectedUser = m_currentPeer;
 
-    // 為了防止切換選中狀態，我們先阻斷信號
     ui->userListWidget->blockSignals(true);
+
     ui->userListWidget->clear();
 
-    for (const QJsonValue &userValue : std::as_const(users)) {
+    // ======================= 全新核心修复策略 =======================
+    // 1. 创建并添加一个临时的、不可见的占位符
+    //    这会确保列表在添加第一个真实用户时不是空的，从而阻止自动选择行为。
+    QListWidgetItem *placeholder = new QListWidgetItem();
+    placeholder->setHidden(true); // 让用户看不见
+    placeholder->setFlags(placeholder->flags() & ~Qt::ItemIsSelectable); // 禁止被选中
+    ui->userListWidget->addItem(placeholder);
+    // =============================================================
+
+    QListWidgetItem *itemToSelect = nullptr;
+
+    // 2. 正常添加所有真实的用户
+    for (const QJsonValue &userValue : users) {
         const QString username = userValue.toString();
         if (username != m_username) {
-            ui->userListWidget->addItem(username);
-        }
-    }
-
-    ui->userListWidget->blockSignals(false);
-
-    // 嘗試恢復之前的選擇
-    if (!previouslySelectedUser.isEmpty()) {
-        for (int i = 0; i < ui->userListWidget->count(); ++i) {
-            QListWidgetItem *item = ui->userListWidget->item(i);
-            if (item->text() == previouslySelectedUser) {
-                // 找到了，手動設置為當前選中項
-                ui->userListWidget->setCurrentItem(item);
-                break;
+            QListWidgetItem *newItem = new QListWidgetItem(username, ui->userListWidget);
+            if (username == previouslySelectedUser) {
+                itemToSelect = newItem;
             }
         }
     }
 
-    // 如果恢復選擇失敗（例如用戶已下線），確保UI狀態正確
-    if (!ui->userListWidget->currentItem()){
-        onUserSelectionChanged(nullptr, nullptr); // 手動觸發清空和禁用邏輯
+    // 3. 移除占位符。 takeItem会从列表中移除项，然后我们可以安全地删除它。
+    delete ui->userListWidget->takeItem(ui->userListWidget->row(placeholder));
+
+
+    // 现在列表处于干净的状态，我们可以安全地设置我们期望的选中项
+    ui->userListWidget->setCurrentItem(itemToSelect);
+
+    ui->userListWidget->blockSignals(false);
+
+    // 处理之前聊天对象下线的情况
+    if (!itemToSelect && !previouslySelectedUser.isEmpty()) {
+        onUserSelectionChanged(nullptr, nullptr);
     }
 }
+
 
 void MainWindow::handleChatMessage(const QJsonObject &json)
 {
