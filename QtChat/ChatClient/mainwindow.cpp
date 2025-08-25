@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-//#include "logindialog.h"
+#include "chatclienthandler.h"
 
 MainWindow::MainWindow(QTcpSocket *socket,
                        const QString &username, QWidget *parent)
@@ -60,7 +60,7 @@ void MainWindow::on_sendButton_clicked()
     sendMessage(messageJson);
 
     // 在自己的聊天窗口也顯示自己發送的消息
-    ui->chatDisplayBrowser->append(QString("[Me -> %1]: %2").arg(toUser).arg(messageText));
+    ui->chatDisplayBrowser->append(QString("[Me -> %1]: %2").arg(toUser, messageText));
     ui->messageLineEdit->clear();
 }
 
@@ -163,12 +163,12 @@ void MainWindow::handleUserListUpdate(const QJsonObject &json)
     qDebug() << "My username is:" << m_username << ". I will not be shown in the list.";
     qDebug() << "Users to be added:" << users;
 
-    for (const QJsonValue &user : users) {
+    for (const QJsonValue &user : std::as_const(users)) {
         // 不在列表中顯示自己
-        if (user.toString() != m_username) {
-            qDebug() << "Adding user:" << user.toString();
-
-            ui->userListWidget->addItem(user.toString());
+        const QString username = user.toString();
+        if (username != m_username) {
+            qDebug() << "Adding user:" << username;
+            ui->userListWidget->addItem(username);
         }
     }
 }
@@ -177,6 +177,6 @@ void MainWindow::handleChatMessage(const QJsonObject &json)
 {
     QString from = json["from"].toString();
     QString content = json["content"].toString();
-    ui->chatDisplayBrowser->append(QString("[%1->Me]: %2").arg(from).arg(content));
+    ui->chatDisplayBrowser->append(QString("[%1->Me]: %2").arg(from,content));
 }
 

@@ -9,6 +9,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include "chatclienthandler.h"
+
 namespace Ui {
 class LoginDialog;
 }
@@ -18,7 +20,7 @@ class LoginDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LoginDialog(QTcpSocket *socket, QWidget *parent = nullptr);
+    explicit LoginDialog(ChatClientHandler *handler, QWidget *parent = nullptr);
     ~LoginDialog();
     QString getUsername() const; //獲取登入成功後的使用者名稱
 
@@ -39,7 +41,7 @@ private:
     void sendMessage(const QJsonObject &json);
     void handleLoginSuccess(const QJsonObject &json);
     void handleLoginFailure(const QJsonObject &json);
-    void handleRegistrationSuccess(const QJsonObject &json);
+    void handleRegistrationSuccess();
     void handleRegistrationFailure(const QJsonObject &json);
 };
 

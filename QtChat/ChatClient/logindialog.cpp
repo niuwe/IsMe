@@ -72,13 +72,9 @@ void LoginDialog::onReadyRead()
 
         // 接著嘗試讀取包體（JSON數據）
         if (m_tcpSocket->bytesAvailable() < blockSize) {
-            // 數據不完整，需要回退指針並等待
-            // 為了簡化教程，我們暫不處理這種極端情況，假設包體總是一次性到達
-            // 在一個健壯的客戶端中，這裡需要更複雜的緩衝區邏輯
             break;
         }
 
-        //QByteArray jsonData;
         QByteArray jsonData = m_tcpSocket->read(blockSize);// 讀取包體
         qDebug() << "LoginDialog: received message is:" << jsonData;
         // 解析並分發消息
@@ -93,7 +89,7 @@ void LoginDialog::onReadyRead()
             }else if(type == "login_failure"){
                 handleLoginFailure(json);
             }else if (type == "registration_success") {
-                handleRegistrationSuccess(json);
+                handleRegistrationSuccess();
             } else if (type == "registration_failure") {
                 handleRegistrationFailure(json);
             }
@@ -194,7 +190,7 @@ void LoginDialog::on_registerButton_clicked()
     }
 }
 
-void LoginDialog::handleRegistrationSuccess(const QJsonObject &json)
+void LoginDialog::handleRegistrationSuccess()
 {
     QMessageBox::information(this, "註冊成功", "您的帳號已成功註冊，現在可以使用它登入了。");
 }

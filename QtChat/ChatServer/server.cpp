@@ -103,6 +103,7 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
 
         m_clients[socket] = username;
         m_loggedUsers.insert(username);
+        m_usernameToSocketMap[username] = socket;
 
         response["type"] = "login_success";
         response["username"] = username;
@@ -126,25 +127,23 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
 // 處理聊天消息轉發
 void Server::handleChatMessage(QTcpSocket *socket, const QJsonObject &json)
 {
-    QString from = json["from"].toString();
     QString to = json["to"].toString();
 
-    // 在 m_clients 中找到接收者 'to' 的 socket
-    QTcpSocket *destSocket = nullptr;
-    for (auto it = m_clients.begin(); it != m_clients.end(); ++it) {
-        if (it.value() == to) {
-            destSocket = it.key();
-            break;
-        }
+    if (!m_clients.contains(socket)) {
+        qDebug() << "Warning: Received message from an unauthenticated socket.";
+        return;
     }
+    QString from = m_clients.value(socket);
+    QJsonObject messageToSend = json;
+    messageToSend["from"] = from;
 
-    // 如果找到了接收者，則將原消息轉發給他
-    if (destSocket) {
-        qDebug() << "Finded Receiver" << destSocket;
-        sendMessage(destSocket,json);
+    // O(log N) 查找，高效且简洁
+    if (m_usernameToSocketMap.contains(to)) {
+        QTcpSocket *destSocket = m_usernameToSocketMap.value(to);
+        sendMessage(destSocket, messageToSend);
     } else {
-        // (可選) 處理用戶離線的情況，例如回覆發送者一條提示
         qDebug() << "User" << to << "not found or offline.";
+        // (可选) 可以向发送者回发一条“用户不在线”的提示
     }
 }
 
@@ -155,11 +154,10 @@ void Server::broadcastUserList()
     userListMessage["type"] = "user_list_update";
     userListMessage["users"] = QJsonArray::fromStringList(m_loggedUsers.values());
 
-    QByteArray data = QJsonDocument(userListMessage).toJson();
-    // 向所有已連接的客戶端發送
-    for (QTcpSocket *client : m_clients.keys()) {
-        //client->write(data);
-        sendMessage(client, userListMessage);
+    // 使用 constBegin() 和 constEnd()，我们不打算在循环中修改 map。
+    for (auto it = m_clients.constBegin(); it != m_clients.constEnd(); ++it) {
+        // it.key() 就是我们需要的 QTcpSocket*
+        sendMessage(it.key(), userListMessage);
     }
 }
 
@@ -172,6 +170,7 @@ void Server::onDisconnected()
         if (!username.isEmpty()) {
             m_clients.remove(clientSocket);
             m_loggedUsers.remove(username);
+            m_usernameToSocketMap.remove(username);
             qDebug() << "User" << username << "disconnected.";
             // 用戶下線，再次廣播用戶列表
             broadcastUserList();
