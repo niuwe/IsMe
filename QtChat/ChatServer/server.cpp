@@ -44,9 +44,6 @@ void Server::onReadyRead()
     QTcpSocket *clientSocket = qobject_cast<QTcpSocket*>(sender());
     if (!clientSocket) return;
 
-    // 简化的演示，暂时不处理粘包和分包的复杂情况
-    // 假设一次能读到一个完整的包（包头+包体）
-    // 在实际项目中，这里需要一个循环和缓冲区来处理
     QDataStream in(clientSocket);
     in.setVersion(QDataStream::Qt_6_0); // 确保版本一致
 
@@ -90,11 +87,6 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
     QString username = json["username"].toString();
     QString password = json["password"].toString();
 
-    // 暫時硬編碼用戶驗證邏輯
-    // bool loginSuccess = (username == "userA" && password == "passA") ||
-    //                     (username == "userB" && password == "passB") ||
-    //                     (username == "userC" && password == "passC");
-
     bool loginSuccess = m_userCredentials.contains(username) &&
                         (m_userCredentials.value(username) == password);
 
@@ -109,11 +101,6 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
         response["username"] = username;
         sendMessage(socket, response); // 只發送登入成功訊息
         qDebug() << "User" << username << "logged in.";
-
-        // 向【其他】所有客戶端廣播更新後的用戶列表
-        // 注意：這裡依然可以廣播，但剛登入的客戶端會自己請求一次，確保能收到。
-        // 或者為了簡化，可以把廣播完全移到用戶離線時。
-        // 這裡我們先保留廣播，讓其他用戶能即時看到新人上線。
         broadcastUserList();
     } else {
         // 登錄失敗
