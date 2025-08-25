@@ -1,6 +1,7 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include <QMessageBox>
+#include <QFile>
 
 LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     : QDialog(parent)
@@ -9,6 +10,16 @@ LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("Login Client");
+
+    // === 加载并应用QSS样式表 ===
+    QFile styleFile(":/loginstyle.qss"); // 从资源文件加载
+    if (styleFile.open(QFile::ReadOnly)) {
+        QString styleSheet = QLatin1String(styleFile.readAll());
+        this->setStyleSheet(styleSheet);
+        styleFile.close();
+    } else {
+        qDebug() << "Warning: Could not open LoginStyle.qss";
+    }
 
     connect(m_handler, &ChatClientHandler::connected, this, &LoginDialog::onConnected);
     connect(m_handler, &ChatClientHandler::errorOccurred, this, &LoginDialog::onError);

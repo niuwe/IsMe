@@ -1,22 +1,33 @@
 #include "mainwindow.h"
-// #include "qmessagebox.h"
 #include "historymanager.h"
 #include "chatclienthandler.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QDateTime>
+#include <QTextCursor>
+#include <QTextBlockFormat>
+#include <QFile>
 
 MainWindow::MainWindow(ChatClientHandler *handler,
                        const QString &username, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_handler(handler)
-    , m_historyManager(new HistoryManager(username, this))
     , m_username(username)
-
+    , m_historyManager(new HistoryManager(username, this))
 {
     ui->setupUi(this);
     this->setWindowTitle("Chat Client - " + m_username);
 
+    // === 加载并应用QSS样式表 ===
+    QFile styleFile(":/mainwindowstyle.qss");
+    if (styleFile.open(QFile::ReadOnly)) {
+        QString styleSheet = QLatin1String(styleFile.readAll());
+        this->setStyleSheet(styleSheet);
+        styleFile.close();
+    } else {
+        qDebug() << "Warning: Could not open MainStyle.qss";
+    }
     connect(m_handler, &ChatClientHandler::jsonMessageReceived,
             this, &MainWindow::onJsonReceived);
     connect(ui->userListWidget, &QListWidget::currentItemChanged,
@@ -50,7 +61,7 @@ void MainWindow::onUserSelectionChanged(QListWidgetItem *current, QListWidgetIte
 
     // 1. 更新當前聊天對象
     m_currentPeer = current->text();
-    this->setWindowTitle(QString("Chat Client - %1 (與 %2 對話中)").arg(m_username).arg(m_currentPeer));
+    this->setWindowTitle(QString("Chat Client - %1 (與 %2 對話中)").arg(m_username,m_currentPeer));
 
 
     // 2. 清空聊天顯示窗口
@@ -58,7 +69,7 @@ void MainWindow::onUserSelectionChanged(QListWidgetItem *current, QListWidgetIte
 
     // 3. 從 HistoryManager 加載與該用戶的歷史記錄
     QList<QJsonObject> history = m_historyManager->loadHistory(m_currentPeer);
-    for (const QJsonObject &message : history) {
+    for (const QJsonObject &message : std::as_const(history)) {
         displayMessage(message);
     }
 
@@ -84,7 +95,8 @@ void MainWindow::on_sendButton_clicked()
     messageJson["from"] = m_username;
     messageJson["to"] = m_currentPeer;
     messageJson["content"] = messageText;
-
+    messageJson["timestamp"] = QDateTime::currentDateTime()
+                                   .toString("yyyy-MM-dd hh:mm:ss");
     // 1. 通過網絡發送
     m_handler->sendMessage(messageJson);
 
@@ -138,14 +150,12 @@ void MainWindow::handleUserListUpdate(const QJsonObject &json)
 
     QListWidgetItem *itemToSelect = nullptr;
 
-    // 2. 正常添加所有真实的用户
-    for (const QJsonValue &userValue : users) {
+    // 1. 正常添加所有真实的用户 (只管添加，不管选中)
+    for (const QJsonValue &userValue : std::as_const(users)) {
         const QString username = userValue.toString();
         if (username != m_username) {
-            QListWidgetItem *newItem = new QListWidgetItem(username, ui->userListWidget);
-            if (username == previouslySelectedUser) {
-                itemToSelect = newItem;
-            }
+            // 直接创建并让 userListWidget 拥有它，不需要中间变量
+            new QListWidgetItem(username, ui->userListWidget);
         }
     }
 
@@ -195,14 +205,33 @@ void MainWindow::displayMessage(const QJsonObject &message)
 {
     QString from = message["from"].toString();
     QString content = message["content"].toString();
+    QString timestamp = message["timestamp"].toString();
+
+    // 纠正之前的BUG：确保在处理前正确转义内容
+    content = content.toHtmlEscaped();
+    content.replace("\n", "<br/>");
 
     QString formattedMessage;
+
+    // 使用HTML表格来确保布局的绝对稳定
+    // 用户名/标识在左侧，时间戳在右侧
+    QString headerTemplate =
+        "<table width='100%'><tr>"
+        "<td align='left'>%1</td>"
+        "<td align='right'><font color='gray'>%2</font></td>"
+        "</tr></table>";
+
     if (from == m_username) {
-        // 自己發送的消息
-        formattedMessage = QString("<p style='text-align: right;'><b style=\"color:green;\">Me:</b> %1</p>").arg(content);
+        // 自己发送的消息
+        QString header = headerTemplate.arg("<b><font color='#2E8B57'>Me (我)</font></b>",timestamp);
+        formattedMessage = header + content;
+
     } else {
         // 接收到的消息
-        formattedMessage = QString("<p style='text-align: left;'><b style=\"color:blue;\">%1:</b> %2</p>").arg(from,content);
+        QString header = headerTemplate.arg("<b><font color='#7AC5CD'>%1</font></b>",from,timestamp);
+        formattedMessage = header + content;
     }
+
+    // 使用最稳定、最简单的 append 方法添加新段落
     ui->chatDisplayBrowser->append(formattedMessage);
 }

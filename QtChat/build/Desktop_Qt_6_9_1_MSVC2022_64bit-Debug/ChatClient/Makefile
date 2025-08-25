@@ -324,6 +324,7 @@ Makefile: ..\..\..\ChatClient\ChatClient.pro C:\qt6.9\6.9.1\msvc2022_64\mkspecs\
 		C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Core.prl \
 		C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6EntryPoint.prl \
 		C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\build_pass.prf \
+		..\..\..\ChatClient\qss.qrc \
 		C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Widgetsd.prl \
 		C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Guid.prl \
 		C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Networkd.prl \
@@ -570,6 +571,7 @@ C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Network.prl:
 C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Core.prl:
 C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6EntryPoint.prl:
 C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\build_pass.prf:
+..\..\..\ChatClient\qss.qrc:
 C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Widgetsd.prl:
 C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Guid.prl:
 C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Networkd.prl:

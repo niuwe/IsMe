@@ -1,0 +1,115 @@
+/* === 主窗口和背景 === */
+QMainWindow#MainWindow, QWidget#centralwidget {
+    background-color: #2D3035; /* 深灰色背景 */
+}
+
+/* === 用户列表 (QListWidget) === */
+QListWidget {
+    background-color: #3C3F44; /* 比背景稍亮的灰色 */
+    color: #E0E0E0; /* 列表文字颜色 */
+    border: 1px solid #222; /* 更深的边框 */
+    border-radius: 5px;
+    padding: 5px; /* 列表的内边距 */
+    font-size: 14px;
+}
+/* 列表中的每一项 */
+QListWidget::item {
+    padding: 8px; /* 每一项的内边距 */
+    border-radius: 4px; /* 项的圆角 */
+}
+/* 鼠标悬停在某一项上 */
+QListWidget::item:hover {
+    background-color: #4A4E54; /* 悬停时背景变亮 */
+}
+/* 选中某一项时 */
+QListWidget::item:selected {
+    background-color: #007ACC; /* 蓝色高亮 */
+    color: white; /* 选中时文字变白 */
+}
+
+/* === 聊天显示窗口 (QTextBrowser) === */
+QTextBrowser {
+    background-color: #25282C; /* 更深的背景，与输入区分开 */
+    color: #F0F0F0;
+    border: 1px solid #222;
+    border-radius: 5px;
+    padding: 8px; /* 内边距 */
+    font-size: 14px;
+}
+
+/* === 消息输入框 (QLineEdit) === */
+QLineEdit {
+    background-color: #3C3F44;
+    color: #F0F0F0;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 15px;
+}
+/* 输入框获取焦点时的样式 */
+QLineEdit:focus {
+    border: 1px solid #007ACC;
+    background-color: #454950;
+}
+
+/* === 发送按钮 (QPushButton) === */
+QPushButton#sendButton {
+    background-color: #007ACC;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px; /* 左右内边距更大 */
+    font-size: 14px;
+    font-weight: bold;
+}
+QPushButton#sendButton:hover {
+    background-color: #008AEF;
+}
+QPushButton#sendButton:pressed {
+    background-color: #006ABF;
+}
+
+/* === 滚动条通用样式 (QScrollBar) === */
+QScrollBar:vertical {
+    border: none;
+    background: #2D3035; /* 滚动条背景色 */
+    width: 10px; /* 滚动条宽度 */
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: #555; /* 滚动条滑块颜色 */
+    min-height: 20px; /* 滑块最小高度 */
+    border-radius: 5px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #777; /* 悬停时滑块颜色 */
+}
+/* 隐藏上下箭头 */
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* === 菜单栏和状态栏 === */
+QMenuBar {
+    background-color: #2D3035;
+    color: #E0E0E0;
+}
+QMenuBar::item {
+    background: transparent;
+    padding: 4px 8px;
+}
+QMenuBar::item:selected {
+    background: #4A4E54;
+}
+QMenu {
+    background-color: #3C3F44;
+    color: #E0E0E0;
+    border: 1px solid #222;
+}
+QMenu::item:selected {
+    background-color: #007ACC;
+}
+QStatusBar {
+    background-color: #2D3035;
+    color: #A0A0A0;
+}

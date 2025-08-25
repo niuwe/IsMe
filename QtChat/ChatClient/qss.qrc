@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>loginstyle.qss</file>
+        <file>mainwindowstyle.qss</file>
+    </qresource>
+</RCC>
