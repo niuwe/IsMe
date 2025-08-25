@@ -20,8 +20,8 @@ MainWindow::MainWindow(ChatClientHandler *handler,
             this, &MainWindow::onUserSelectionChanged);
 
     // 初始狀態下，輸入框和發送按鈕不可用，因為還沒有選擇聊天對象
-    // ui->messageLineEdit->setEnabled(false);
-    // ui->sendButton->setEnabled(false);
+    ui->messageLineEdit->setEnabled(false);
+    ui->sendButton->setEnabled(false);
 
     QJsonObject requestJson;
     requestJson["type"] = "request_user_list";
@@ -48,7 +48,7 @@ void MainWindow::onUserSelectionChanged(QListWidgetItem *current, QListWidgetIte
 
     // 1. 更新當前聊天對象
     m_currentPeer = current->text();
-    this->setWindowTitle(QString("Chat Client - %1 (與 %2 對話中)").arg(m_username,m_currentPeer));
+    this->setWindowTitle(QString("Chat Client - %1 (與 %2 對話中)").arg(m_username).arg(m_currentPeer));
 
 
     // 2. 清空聊天顯示窗口
@@ -56,55 +56,53 @@ void MainWindow::onUserSelectionChanged(QListWidgetItem *current, QListWidgetIte
 
     // 3. 從 HistoryManager 加載與該用戶的歷史記錄
     QList<QJsonObject> history = m_historyManager->loadHistory(m_currentPeer);
-    for (const QJsonObject &message : std::as_const(history)) {
+    for (const QJsonObject &message : history) {
         displayMessage(message);
     }
 
     // 4. 啟用輸入和發送功能
     ui->messageLineEdit->setEnabled(true);
     ui->sendButton->setEnabled(true);
-    qDebug() << "打開輸入框" ;
-    ui->messageLineEdit->setFocus();
 }
 
 
-// 發送按鈕點擊
+
 void MainWindow::on_sendButton_clicked()
 {
-    qDebug() << "mainwondow: Send button clicked.";
-    QString messageText = ui->messageLineEdit->text();
-    if (messageText.isEmpty()) return;
-
-    // 獲取當前在用戶列表中選中的用戶
-    QListWidgetItem *selectedItem = ui->userListWidget->currentItem();
-    if (!selectedItem) {
-        qDebug() << "No user selected, returning.";
-        // (可選) 提示用戶需要先選擇一個聊天對象
-        QMessageBox::warning(this,"Erroe","No user selected ");
+    // 確保有選中的聊天對象
+    if (m_currentPeer.isEmpty()) {
         return;
     }
-    QString toUser = selectedItem->text();
+
+    QString messageText = ui->messageLineEdit->text();
+    if (messageText.isEmpty()) return;
 
     QJsonObject messageJson;
     messageJson["type"] = "chat_message";
     messageJson["from"] = m_username;
-    messageJson["to"] = toUser;
+    messageJson["to"] = m_currentPeer;
     messageJson["content"] = messageText;
 
-    qDebug() << "mainwindow: send chat message to" << toUser;
-    //sendMessage(messageJson);
+    // 1. 通過網絡發送
     m_handler->sendMessage(messageJson);
 
-    // 在自己的聊天窗口也顯示自己發送的消息
-    ui->chatDisplayBrowser->append(QString("[Me -> %1]: %2").arg(toUser, messageText));
+    // 2. 在本地立即顯示自己發送的消息
+    displayMessage(messageJson);
+
+    // 3. 將自己發送的消息保存到歷史記錄
+    m_historyManager->saveMessage(m_currentPeer, messageJson);
+
     ui->messageLineEdit->clear();
+    ui->messageLineEdit->setFocus();
 }
+
 
 
 //統一處理所有收到的 JSON 消息
 void MainWindow::onJsonReceived(const QJsonObject &json)
 {
     qDebug() << "[DEBUG] onJsonReceived triggered. Received JSON:" << json;
+
     QString type = json["type"].toString();
     qDebug() << "MainWindow received JSON type:" << type;
 
