@@ -26,6 +26,7 @@ private:
     QSet<QString> m_loggedUsers;
     QMap<QString, QString> m_userCredentials;
     QMap<QString, QTcpSocket*> m_usernameToSocketMap;
+    QMap<QTcpSocket*, qint32> m_clientBlockSizes;
 
 private:
     void handleLogin(QTcpSocket *socket, const QJsonObject &json);

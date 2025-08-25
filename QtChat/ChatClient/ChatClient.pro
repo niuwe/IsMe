@@ -10,12 +10,14 @@ CONFIG += c++17
 
 SOURCES += \
     chatclienthandler.cpp \
+    historymanager.cpp \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     chatclienthandler.h \
+    historymanager.h \
     logindialog.h \
     mainwindow.h
 

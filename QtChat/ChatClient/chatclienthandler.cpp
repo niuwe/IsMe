@@ -24,7 +24,7 @@ bool ChatClientHandler::isConnected() const
     return m_tcpSocket->state() == QAbstractSocket::ConnectedState;
 }
 
-// 这就是那个【唯一且正确】的 onReadyRead 实现
+
 void ChatClientHandler::onReadyRead()
 {
     QDataStream in(m_tcpSocket);

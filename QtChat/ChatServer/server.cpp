@@ -33,7 +33,6 @@ void Server::onNewConnection()
     {
         qDebug() << "Client connected:" << clientSocket->peerAddress().toString();
 
-        // 將新 socket 的信號連接到我們的槽
         connect(clientSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
         connect(clientSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
     }
@@ -45,37 +44,58 @@ void Server::onReadyRead()
     if (!clientSocket) return;
 
     QDataStream in(clientSocket);
-    in.setVersion(QDataStream::Qt_6_0); // 确保版本一致
+    in.setVersion(QDataStream::Qt_6_0);
 
-    if (clientSocket->bytesAvailable() < sizeof(qint32))
-        return; // 数据不够，等下一次
+    // 引用地獲取blockSize，這樣可以直接修改map中的值
+    qint32 &blockSize = m_clientBlockSizes[clientSocket];
 
-    qint32 blockSize;
-    in >> blockSize; // 读取包头
-
-    if (clientSocket->bytesAvailable() < blockSize)
-        return; // 数据不完整，等下一次
-
-    QByteArray jsonData = clientSocket->read(blockSize);
-    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
-
-
-    if(doc.isObject())
+    // 使用 while 循環來處理粘包
+    while (true)
     {
-        QJsonObject json = doc.object();
-        QString type = json["type"].toString();
-        qDebug() << "Received JSON of type:" << type;
+        // 情況A：正在等待新的包頭
+        if (blockSize == 0) {
+            // 檢查數據是否足以讀取一個完整的包頭
+            if (clientSocket->bytesAvailable() < sizeof(qint32)) {
+                break; // 數據不夠，退出循環，等待下一次 readyRead
+            }
+            // 讀取包頭
+            in >> blockSize;
+        }
 
-        // 在这里根据不同的 type 来处理不同的逻辑
-        if (type == "login") {
-            handleLogin(clientSocket, json);
-        } else if (type == "chat_message") {
-            qDebug() << "Received chat_message"<<json ;
-            handleChatMessage(clientSocket, json);
-        } else if (type == "request_user_list") { // <-- 新增的處理分支
-            handleUserListRequest(clientSocket);
-        } else if (type == "register") { // <-- 新增分支
-            handleRegistration(clientSocket, json);
+        // 情況B：正在等待包體
+        // 檢查數據是否足以讀取一個完整的包體
+        if (clientSocket->bytesAvailable() < blockSize) {
+            break; // 數據不完整，退出循環，等待下一次 readyRead
+        }
+
+        // 讀取完整的包體數據
+        QByteArray jsonData = clientSocket->read(blockSize);
+        // 【關鍵】將 blockSize 重置為0，準備接收下一個包
+        blockSize = 0;
+
+        // --- JSON解析和分發
+        QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+        if(doc.isObject())
+        {
+            QJsonObject json = doc.object();
+            QString type = json["type"].toString();
+            qDebug() << "Received JSON of type:" << type;
+
+            if (type == "login") {
+                handleLogin(clientSocket, json);
+            } else if (type == "chat_message") {
+                qDebug() << "Received chat_message"<<json ;
+                handleChatMessage(clientSocket, json);
+            } else if (type == "request_user_list") {
+                handleUserListRequest(clientSocket);
+            } else if (type == "register") {
+                handleRegistration(clientSocket, json);
+            }
+        }
+
+        // 如果緩衝區沒數據了，就退出循環
+        if (clientSocket->bytesAvailable() == 0) {
+            break;
         }
     }
 }

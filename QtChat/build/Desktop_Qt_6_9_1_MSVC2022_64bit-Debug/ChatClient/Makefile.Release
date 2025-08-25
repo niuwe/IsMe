@@ -51,22 +51,28 @@ OBJECTS_DIR   = release
 ####### Files
 
 SOURCES       = ..\..\..\ChatClient\chatclienthandler.cpp \
+		..\..\..\ChatClient\historymanager.cpp \
 		..\..\..\ChatClient\logindialog.cpp \
 		..\..\..\ChatClient\main.cpp \
 		..\..\..\ChatClient\mainwindow.cpp release\moc_chatclienthandler.cpp \
+		release\moc_historymanager.cpp \
 		release\moc_logindialog.cpp \
 		release\moc_mainwindow.cpp
 OBJECTS       = release\chatclienthandler.obj \
+		release\historymanager.obj \
 		release\logindialog.obj \
 		release\main.obj \
 		release\mainwindow.obj \
 		release\moc_chatclienthandler.obj \
+		release\moc_historymanager.obj \
 		release\moc_logindialog.obj \
 		release\moc_mainwindow.obj
 
 DIST          =  ..\..\..\ChatClient\chatclienthandler.h \
+		..\..\..\ChatClient\historymanager.h \
 		..\..\..\ChatClient\logindialog.h \
 		..\..\..\ChatClient\mainwindow.h ..\..\..\ChatClient\chatclienthandler.cpp \
+		..\..\..\ChatClient\historymanager.cpp \
 		..\..\..\ChatClient\logindialog.cpp \
 		..\..\..\ChatClient\main.cpp \
 		..\..\..\ChatClient\mainwindow.cpp
@@ -146,7 +152,7 @@ all: Makefile.Release  release\ChatClient.exe
 
 release\ChatClient.exe: C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Widgets.lib C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Gui.lib C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Network.lib C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Core.lib C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6EntryPoint.lib ui_logindialog.h ui_mainwindow.h $(OBJECTS) 
 	$(LINKER) $(LFLAGS) /MANIFEST:embed /OUT:$(DESTDIR_TARGET) @<<
-release\chatclienthandler.obj release\logindialog.obj release\main.obj release\mainwindow.obj release\moc_chatclienthandler.obj release\moc_logindialog.obj release\moc_mainwindow.obj
+release\chatclienthandler.obj release\historymanager.obj release\logindialog.obj release\main.obj release\mainwindow.obj release\moc_chatclienthandler.obj release\moc_historymanager.obj release\moc_logindialog.obj release\moc_mainwindow.obj
 $(LIBS)
 <<
 
@@ -156,10 +162,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) ChatClient.zip $(SOURCES) $(DIST) ..\..\..\ChatClient\ChatClient.pro C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\spec_pre.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\windows-desktop.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\windows_vulkan_sdk.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\windows-vulkan.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\msvc-desktop.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\qconfig.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_freetype.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_libjpeg.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_libpng.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_openxr_loader.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_charts.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_charts_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_chartsqml.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_chartsqml_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_concurrent.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_core.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_core_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_dbus.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_dbus_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_designer.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_designer_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_entrypoint_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_example_icons_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_examples_asset_downloader_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_ffmpegmediapluginimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_freetype_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_gui.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_gui_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_harfbuzz_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_help.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_help_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_jpeg_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsanimation.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsanimation_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsfolderlistmodel.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsfolderlistmodel_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsplatform.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsplatform_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsqmlmodels.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsqmlmodels_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssettings.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssettings_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssharedimage.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssharedimage_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labswavefrontmesh.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labswavefrontmesh_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_linguist.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimedia.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediaquick_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediatestlibprivate_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_network.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_network_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_opengl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_opengl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_openglwidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_openglwidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_png_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_printsupport.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qdoccatch_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qdoccatchconversions_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qdoccatchgenerators_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qml.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qml_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlassetdownloader.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlassetdownloader_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcompiler.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcompiler_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcore.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcore_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmldom_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlformat_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlintegration.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlintegration_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmllocalstorage.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmllocalstorage_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlls_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmeta.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmeta_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmodels.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmodels_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlnetwork.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlnetwork_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltest.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltoolingsettings_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltyperegistrar_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlworkerscript.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlxmllistmodel.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlxmllistmodel_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3d.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3d_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetimport.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetutils.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetutils_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3deffects.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3deffects_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dglslparser_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpers.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpers_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpersimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpersimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3diblbaker.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3diblbaker_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticleeffects.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticleeffects_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticles.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticles_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3druntimerender.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dspatialaudio_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dutils.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dutils_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dxr.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dxr_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basic.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basic_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basicstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basicstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fluentwinui3styleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fluentwinui3styleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusion.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusion_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusionstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusionstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imagine.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imagine_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imaginestyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imaginestyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2impl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2impl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2material.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2material_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2materialstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2materialstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universal.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universal_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universalstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universalstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2windowsstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2windowsstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrolstestutilsprivate_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2utils.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2utils_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickeffects.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickeffects_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicklayouts.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicklayouts_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktestutilsprivate_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimeline.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimeline_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimelineblendtrees.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimelineblendtrees_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickvectorimage.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickvectorimage_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickvectorimagegenerator_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_shadertools.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_shadertools_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_spatialaudio.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_spatialaudio_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_sql.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_sql_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svg.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svg_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svgwidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svgwidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_testinternals_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_testlib.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_testlib_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_tools_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_uiplugin.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_uitools.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_uitools_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_widgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_widgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_xml.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_xml_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_zlib_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qt_functions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qt_config.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\win32-msvc\qmake.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\spec_post.prf ..\.qmake.stash C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\exclusive_builds.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\msvc-version.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\toolchain.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\default_pre.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\default_pre.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\resolve_config.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\exclusive_builds_post.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\default_post.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\build_pass.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qml_debug.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\precompile_header.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\warn_on.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\permissions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qt.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\resources_functions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\resources.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\moc.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\opengl.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\uic.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qmake_use.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\file_copies.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\windows.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\testcase_targets.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\exceptions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\yacc.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\lex.prf ..\..\..\ChatClient\ChatClient.pro C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Widgets.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Gui.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Network.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Core.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6EntryPoint.prl    C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\data\dummy.cpp ..\..\..\ChatClient\chatclienthandler.h ..\..\..\ChatClient\logindialog.h ..\..\..\ChatClient\mainwindow.h  ..\..\..\ChatClient\chatclienthandler.cpp ..\..\..\ChatClient\logindialog.cpp ..\..\..\ChatClient\main.cpp ..\..\..\ChatClient\mainwindow.cpp ..\..\..\ChatClient\logindialog.ui ..\..\..\ChatClient\mainwindow.ui    
+	$(ZIP) ChatClient.zip $(SOURCES) $(DIST) ..\..\..\ChatClient\ChatClient.pro C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\spec_pre.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\windows-desktop.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\windows_vulkan_sdk.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\windows-vulkan.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\msvc-desktop.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\qconfig.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_freetype.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_libjpeg.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_libpng.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_ext_openxr_loader.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_charts.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_charts_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_chartsqml.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_chartsqml_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_concurrent.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_core.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_core_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_dbus.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_dbus_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_designer.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_designer_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_entrypoint_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_example_icons_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_examples_asset_downloader_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_ffmpegmediapluginimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_freetype_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_gui.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_gui_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_harfbuzz_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_help.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_help_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_jpeg_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsanimation.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsanimation_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsfolderlistmodel.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsfolderlistmodel_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsplatform.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsplatform_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsqmlmodels.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labsqmlmodels_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssettings.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssettings_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssharedimage.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labssharedimage_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labswavefrontmesh.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_labswavefrontmesh_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_linguist.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimedia.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediaquick_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediatestlibprivate_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_network.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_network_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_opengl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_opengl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_openglwidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_openglwidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_png_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_printsupport.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qdoccatch_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qdoccatchconversions_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qdoccatchgenerators_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qml.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qml_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlassetdownloader.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlassetdownloader_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcompiler.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcompiler_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcore.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlcore_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmldom_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlformat_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlintegration.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlintegration_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmllocalstorage.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmllocalstorage_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlls_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmeta.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmeta_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmodels.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlmodels_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlnetwork.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlnetwork_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltest.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltoolingsettings_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmltyperegistrar_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlworkerscript.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlxmllistmodel.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_qmlxmllistmodel_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3d.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3d_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetimport.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetutils.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dassetutils_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3deffects.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3deffects_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dglslparser_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpers.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpers_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpersimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dhelpersimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3diblbaker.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3diblbaker_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticleeffects.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticleeffects_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticles.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dparticles_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3druntimerender.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dspatialaudio_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dutils.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dutils_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dxr.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick3dxr_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quick_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basic.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basic_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basicstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2basicstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fluentwinui3styleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fluentwinui3styleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusion.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusion_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusionstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2fusionstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imagine.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imagine_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imaginestyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2imaginestyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2impl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2impl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2material.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2material_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2materialstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2materialstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universal.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universal_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universalstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2universalstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2windowsstyleimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrols2windowsstyleimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickcontrolstestutilsprivate_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2utils.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickdialogs2utils_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickeffects.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickeffects_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicklayouts.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicklayouts_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktestutilsprivate_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimeline.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimeline_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimelineblendtrees.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quicktimelineblendtrees_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickvectorimage.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickvectorimage_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickvectorimagegenerator_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_shadertools.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_shadertools_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_spatialaudio.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_spatialaudio_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_sql.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_sql_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svg.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svg_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svgwidgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_svgwidgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_testinternals_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_testlib.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_testlib_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_tools_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_uiplugin.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_uitools.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_uitools_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_widgets.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_widgets_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_xml.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_xml_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\modules\qt_lib_zlib_private.pri C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qt_functions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qt_config.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\win32-msvc\qmake.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\spec_post.prf ..\.qmake.stash C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\exclusive_builds.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\common\msvc-version.conf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\toolchain.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\default_pre.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\default_pre.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\resolve_config.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\exclusive_builds_post.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\default_post.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\build_pass.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qml_debug.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\precompile_header.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\warn_on.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\permissions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qt.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\resources_functions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\resources.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\moc.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\opengl.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\uic.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\qmake_use.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\file_copies.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\win32\windows.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\testcase_targets.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\exceptions.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\yacc.prf C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\lex.prf ..\..\..\ChatClient\ChatClient.pro C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Widgets.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Gui.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Network.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6Core.prl C:\qt6.9\6.9.1\msvc2022_64\lib\Qt6EntryPoint.prl    C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\data\dummy.cpp ..\..\..\ChatClient\chatclienthandler.h ..\..\..\ChatClient\historymanager.h ..\..\..\ChatClient\logindialog.h ..\..\..\ChatClient\mainwindow.h  ..\..\..\ChatClient\chatclienthandler.cpp ..\..\..\ChatClient\historymanager.cpp ..\..\..\ChatClient\logindialog.cpp ..\..\..\ChatClient\main.cpp ..\..\..\ChatClient\mainwindow.cpp ..\..\..\ChatClient\logindialog.ui ..\..\..\ChatClient\mainwindow.ui    
 
 clean: compiler_clean 
-	-$(DEL_FILE) release\chatclienthandler.obj release\logindialog.obj release\main.obj release\mainwindow.obj release\moc_chatclienthandler.obj release\moc_logindialog.obj release\moc_mainwindow.obj
+	-$(DEL_FILE) release\chatclienthandler.obj release\historymanager.obj release\logindialog.obj release\main.obj release\mainwindow.obj release\moc_chatclienthandler.obj release\moc_historymanager.obj release\moc_logindialog.obj release\moc_mainwindow.obj
 
 distclean: clean 
 	-$(DEL_FILE) $(DESTDIR_TARGET)
@@ -183,9 +189,9 @@ compiler_moc_predefs_clean:
 release\moc_predefs.h: C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\data\dummy.cpp
 	cl -BxC:\qt6.9\6.9.1\msvc2022_64\bin\qmake.exe -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -O2 -MD -std:c++17 -utf-8 -W3 -w34100 -w34189 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E C:\qt6.9\6.9.1\msvc2022_64\mkspecs\features\data\dummy.cpp 2>NUL >release\moc_predefs.h
 
-compiler_moc_header_make_all: release\moc_chatclienthandler.cpp release\moc_logindialog.cpp release\moc_mainwindow.cpp
+compiler_moc_header_make_all: release\moc_chatclienthandler.cpp release\moc_historymanager.cpp release\moc_logindialog.cpp release\moc_mainwindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) release\moc_chatclienthandler.cpp release\moc_logindialog.cpp release\moc_mainwindow.cpp
+	-$(DEL_FILE) release\moc_chatclienthandler.cpp release\moc_historymanager.cpp release\moc_logindialog.cpp release\moc_mainwindow.cpp
 release\moc_chatclienthandler.cpp: ..\..\..\ChatClient\chatclienthandler.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QObject \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobject.h \
@@ -338,6 +344,150 @@ release\moc_chatclienthandler.cpp: ..\..\..\ChatClient\chatclienthandler.h \
 		release\moc_predefs.h \
 		C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe
 	C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/NWZ/Documents/GitHub/IsMe/QtChat/build/Desktop_Qt_6_9_1_MSVC2022_64bit-Debug/ChatClient/release/moc_predefs.h -IC:/qt6.9/6.9.1/msvc2022_64/mkspecs/win32-msvc -IC:/Users/NWZ/Documents/GitHub/IsMe/QtChat/ChatClient -IC:/qt6.9/6.9.1/msvc2022_64/include -IC:/qt6.9/6.9.1/msvc2022_64/include/QtWidgets -IC:/qt6.9/6.9.1/msvc2022_64/include/QtGui -IC:/qt6.9/6.9.1/msvc2022_64/include/QtNetwork -IC:/qt6.9/6.9.1/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\..\ChatClient\chatclienthandler.h -o release\moc_chatclienthandler.cpp
+
+release\moc_historymanager.cpp: ..\..\..\ChatClient\historymanager.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QObject \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobject.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobjectdefs.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qnamespace.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qglobal.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtcoreglobal.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtversionchecks.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtconfiginclude.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qconfig.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtcore-config.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtconfigmacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtdeprecationdefinitions.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcompilerdetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qprocessordetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsystemdetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtcoreexports.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtdeprecationmarkers.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtclasshelpermacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtpreprocessorsupport.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qassert.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtnoop.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtypes.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtversion.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtypeinfo.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontainerfwd.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsysinfo.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlogging.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qflags.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcompare_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qatomic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbasicatomic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qatomic_cxx11.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qgenericatomic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qyieldcpu.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qconstructormacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdarwinhelpers.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qexceptionhandling.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qforeach.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qttypetraits.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfunctionpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qglobalstatic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmalloc.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qminmax.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qnumeric.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qoverload.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qswap.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtenvironmentvariables.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtresource.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qttranslation.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qversiontagging.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcompare.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstdlibdetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcomparehelpers.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20type_traits.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtmetamacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobjectdefs_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfunctionaltools_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstring.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qchar.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearray.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qrefcount.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qarraydata.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qpair.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qarraydatapointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qarraydataops.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontainertools_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qxptype_traits.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20functional.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20memory.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q17memory.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearrayalgorithms.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearrayview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringfwd.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringliteral.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringalgorithms.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlatin1stringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qanystringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qutf8stringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringtokenizer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringbuilder.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringconverter.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringconverter_base.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlist.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qhashfunctions.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qiterator.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearraylist.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringlist.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qalgorithms.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringmatcher.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcoreevent.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbasictimer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qabstracteventdispatcher.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qeventloop.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdeadlinetimer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qelapsedtimer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmetatype.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdatastream.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qscopedpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qiodevicebase.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfloat16.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmath.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtformat_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qiterable.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmetacontainer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontainerinfo.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtaggedpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qscopeguard.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobject_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbindingstorage.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonObject \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonobject.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonvalue.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcborvalue.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcborcommon.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdatetime.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcalendar.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlocale.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qvariant.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdebug.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtextstream.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontiguouscache.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsharedpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qshareddata.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsharedpointer_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmap.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qshareddata_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qset.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qhash.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qvarlengtharray.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q23utility.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20utility.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qregularexpression.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qurl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\quuid.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qendian.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsondocument.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonparseerror.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QList \
+		release\moc_predefs.h \
+		C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe
+	C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/NWZ/Documents/GitHub/IsMe/QtChat/build/Desktop_Qt_6_9_1_MSVC2022_64bit-Debug/ChatClient/release/moc_predefs.h -IC:/qt6.9/6.9.1/msvc2022_64/mkspecs/win32-msvc -IC:/Users/NWZ/Documents/GitHub/IsMe/QtChat/ChatClient -IC:/qt6.9/6.9.1/msvc2022_64/include -IC:/qt6.9/6.9.1/msvc2022_64/include/QtWidgets -IC:/qt6.9/6.9.1/msvc2022_64/include/QtGui -IC:/qt6.9/6.9.1/msvc2022_64/include/QtNetwork -IC:/qt6.9/6.9.1/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\..\ChatClient\historymanager.h -o release\moc_historymanager.cpp
 
 release\moc_logindialog.cpp: ..\..\..\ChatClient\logindialog.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\QDialog \
@@ -823,6 +973,7 @@ release\moc_mainwindow.cpp: ..\..\..\ChatClient\mainwindow.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
 		..\..\..\ChatClient\chatclienthandler.h \
+		..\..\..\ChatClient\historymanager.h \
 		release\moc_predefs.h \
 		C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe
 	C:\qt6.9\6.9.1\msvc2022_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/NWZ/Documents/GitHub/IsMe/QtChat/build/Desktop_Qt_6_9_1_MSVC2022_64bit-Debug/ChatClient/release/moc_predefs.h -IC:/qt6.9/6.9.1/msvc2022_64/mkspecs/win32-msvc -IC:/Users/NWZ/Documents/GitHub/IsMe/QtChat/ChatClient -IC:/qt6.9/6.9.1/msvc2022_64/include -IC:/qt6.9/6.9.1/msvc2022_64/include/QtWidgets -IC:/qt6.9/6.9.1/msvc2022_64/include/QtGui -IC:/qt6.9/6.9.1/msvc2022_64/include/QtNetwork -IC:/qt6.9/6.9.1/msvc2022_64/include/QtCore -I. -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" ..\..\..\ChatClient\mainwindow.h -o release\moc_mainwindow.cpp
@@ -1005,6 +1156,161 @@ release\chatclienthandler.obj: ..\..\..\ChatClient\chatclienthandler.cpp ..\..\.
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonparseerror.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QDataStream \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonDocument
+
+release\historymanager.obj: ..\..\..\ChatClient\historymanager.cpp ..\..\..\ChatClient\historymanager.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QObject \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobject.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobjectdefs.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qnamespace.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qglobal.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtcoreglobal.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtversionchecks.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtconfiginclude.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qconfig.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtcore-config.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtconfigmacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtdeprecationdefinitions.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcompilerdetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qprocessordetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsystemdetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtcoreexports.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtdeprecationmarkers.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtclasshelpermacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtpreprocessorsupport.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qassert.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtnoop.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtypes.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtversion.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtypeinfo.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontainerfwd.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsysinfo.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlogging.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qflags.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcompare_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qatomic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbasicatomic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qatomic_cxx11.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qgenericatomic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qyieldcpu.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qconstructormacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdarwinhelpers.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qexceptionhandling.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qforeach.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qttypetraits.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfunctionpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qglobalstatic.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmalloc.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qminmax.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qnumeric.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qoverload.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qswap.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtenvironmentvariables.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtresource.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qttranslation.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qversiontagging.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcompare.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstdlibdetection.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcomparehelpers.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20type_traits.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtmetamacros.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobjectdefs_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfunctionaltools_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstring.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qchar.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearray.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qrefcount.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qarraydata.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qpair.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qarraydatapointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qarraydataops.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontainertools_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qxptype_traits.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20functional.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20memory.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q17memory.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearrayalgorithms.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearrayview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringfwd.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringliteral.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringalgorithms.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlatin1stringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qanystringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qutf8stringview.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringtokenizer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringbuilder.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringconverter.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringconverter_base.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlist.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qhashfunctions.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qiterator.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbytearraylist.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringlist.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qalgorithms.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstringmatcher.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcoreevent.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbasictimer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qabstracteventdispatcher.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qeventloop.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdeadlinetimer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qelapsedtimer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmetatype.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdatastream.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qscopedpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qiodevicebase.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfloat16.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmath.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtformat_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qiterable.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmetacontainer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontainerinfo.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtaggedpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qscopeguard.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qobject_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qbindingstorage.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonObject \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonobject.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonvalue.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcborvalue.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcborcommon.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdatetime.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcalendar.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qlocale.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qvariant.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdebug.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtextstream.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qcontiguouscache.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsharedpointer.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qshareddata.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qsharedpointer_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qmap.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qshareddata_impl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qset.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qhash.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qvarlengtharray.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q23utility.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20utility.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qregularexpression.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qurl.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\quuid.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qendian.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsondocument.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonparseerror.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QList \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QDir \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdir.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qdirlisting.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfiledevice.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qiodevice.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qspan.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\q20iterator.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfile.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qfileinfo.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qtimezone.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QFile \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonDocument \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QStandardPaths \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qstandardpaths.h
 
 release\logindialog.obj: ..\..\..\ChatClient\logindialog.cpp ..\..\..\ChatClient\logindialog.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\QDialog \
@@ -1491,6 +1797,7 @@ release\main.obj: ..\..\..\ChatClient\main.cpp ..\..\..\ChatClient\mainwindow.h 
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
 		..\..\..\ChatClient\chatclienthandler.h \
+		..\..\..\ChatClient\historymanager.h \
 		..\..\..\ChatClient\logindialog.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\QDialog \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qdialog.h \
@@ -1737,12 +2044,16 @@ release\mainwindow.obj: ..\..\..\ChatClient\mainwindow.cpp ..\..\..\ChatClient\m
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QJsonArray \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\qjsonarray.h \
 		..\..\..\ChatClient\chatclienthandler.h \
+		..\..\..\ChatClient\historymanager.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qmessagebox.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qdialog.h \
 		C:\qt6.9\6.9.1\msvc2022_64\include\QtWidgets\qdialogbuttonbox.h \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		C:\qt6.9\6.9.1\msvc2022_64\include\QtCore\QDebug
 
 release\moc_chatclienthandler.obj: release\moc_chatclienthandler.cpp 
+
+release\moc_historymanager.obj: release\moc_historymanager.cpp 
 
 release\moc_logindialog.obj: release\moc_logindialog.cpp 
 

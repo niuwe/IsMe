@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include "chatclienthandler.h"
+#include "historymanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainWindow;}
@@ -20,18 +21,14 @@ class MainWindow : public QMainWindow
 
 private slots:
     void on_sendButton_clicked();
-    // void onConnected();
-    // void onErrorOccurred(QAbstractSocket::SocketError socketError);
-    //void onReadyRead();
     void onJsonReceived(const QJsonObject &json);
-    //void on_connectButton_clicked();
+    void onUserSelectionChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
 private:
-    //void sendMessage(const QJsonObject &json);
-    // void handleLoginSuccess(const QJsonObject &json);
-    // void handleLoginFailure(const QJsonObject &json);
+
     void handleUserListUpdate(const QJsonObject &json);
     void handleChatMessage(const QJsonObject &json);
-
+    void displayMessage(const QJsonObject &message);
 public:
     ~MainWindow();
     explicit MainWindow(ChatClientHandler *handler,
@@ -41,7 +38,8 @@ private:
     Ui::MainWindow *ui;
     ChatClientHandler *m_handler;
     QString m_username;
-    //qint32 m_currentBlockSize;
+    QString m_currentPeer;
+    HistoryManager *m_historyManager;
 
 };
 #endif
