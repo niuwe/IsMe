@@ -14,7 +14,7 @@ Server::Server(QObject *parent)
 
     // 監聽本地所有 IP 地址的 12345 端口
     // 如果監聽失敗，打印錯誤信息
-    if (!m_tcpServer->listen(QHostAddress::Any, 12345)) {
+    if (!m_tcpServer->listen(QHostAddress::Any, 54321)) {
         qDebug() << "Server could not start!";
     } else {
         qDebug() << "Server started on port 12345. Waiting for connections...";
