@@ -128,47 +128,47 @@ void MainWindow::onJsonReceived(const QJsonObject &json)
     }
 }
 
-// 在 mainwindow.cpp 中
 
 void MainWindow::handleUserListUpdate(const QJsonObject &json)
 {
     QJsonArray users = json["users"].toArray();
+    // 1. 保存刷新前选中的用户名
     QString previouslySelectedUser = m_currentPeer;
-
-    ui->userListWidget->blockSignals(true);
-
-    ui->userListWidget->clear();
-
-    // ======================= 全新核心修复策略 =======================
-    // 1. 创建并添加一个临时的、不可见的占位符
-    //    这会确保列表在添加第一个真实用户时不是空的，从而阻止自动选择行为。
-    QListWidgetItem *placeholder = new QListWidgetItem();
-    placeholder->setHidden(true); // 让用户看不见
-    placeholder->setFlags(placeholder->flags() & ~Qt::ItemIsSelectable); // 禁止被选中
-    ui->userListWidget->addItem(placeholder);
-    // =============================================================
-
     QListWidgetItem *itemToSelect = nullptr;
 
-    // 1. 正常添加所有真实的用户 (只管添加，不管选中)
+    // 在修改列表前，阻塞信号，防止currentItemChanged被频繁触发
+    ui->userListWidget->blockSignals(true);
+
+    // 2. 清空列表
+    ui->userListWidget->clear();
+
+    // 3. 遍历新用户列表，填充UI并查找需要重新选中的项
     for (const QJsonValue &userValue : std::as_const(users)) {
         const QString username = userValue.toString();
-        if (username != m_username) {
-            // 直接创建并让 userListWidget 拥有它，不需要中间变量
-            new QListWidgetItem(username, ui->userListWidget);
+        // 不在列表中显示自己
+        if (username == m_username) {
+            continue;
+        }
+
+        // 创建新的列表项
+        QListWidgetItem *newItem = new QListWidgetItem(username, ui->userListWidget);
+
+        // 如果这个用户是之前选中的用户，就记录下来
+        if (username == previouslySelectedUser) {
+            itemToSelect = newItem;
         }
     }
 
-    // 3. 移除占位符。 takeItem会从列表中移除项，然后我们可以安全地删除它。
-    delete ui->userListWidget->takeItem(ui->userListWidget->row(placeholder));
-
-
-    // 现在列表处于干净的状态，我们可以安全地设置我们期望的选中项
+    // 4. 恢复之前的选中状态（如果该用户仍然在线）
+    // 如果 previouslySelectedUser 已下线, itemToSelect 将是 nullptr, 调用该函数会清空选择
     ui->userListWidget->setCurrentItem(itemToSelect);
 
+    // 5. 恢复信号
     ui->userListWidget->blockSignals(false);
 
-    // 处理之前聊天对象下线的情况
+    // 6. （可选优化）如果选择被清空，手动触发一次逻辑更新
+    // QListWidget 在 setCurrentItem(nullptr) 时，如果之前没有选中项，可能不发信号
+    // 因此，为了确保UI（如聊天窗口）在用户下线时被正确清空，可以手动检查并调用。
     if (!itemToSelect && !previouslySelectedUser.isEmpty()) {
         onUserSelectionChanged(nullptr, nullptr);
     }
@@ -228,7 +228,7 @@ void MainWindow::displayMessage(const QJsonObject &message)
 
     } else {
         // 接收到的消息
-        QString header = headerTemplate.arg("<b><font color='#7AC5CD'>%1</font></b>",from,timestamp);
+        QString header = headerTemplate.arg(QString("<b><font color='#7AC5CD'>%1</font></b>").arg(from),timestamp);
         formattedMessage = header + content;
     }
 

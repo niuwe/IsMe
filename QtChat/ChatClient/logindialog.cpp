@@ -132,6 +132,8 @@ void LoginDialog::onJsonReceived(const QJsonObject &json)
     if (type == "login_success") {
         m_username = json["username"].toString();
         qDebug()<< "LoginDialog: log in successed!";
+        disconnect(m_handler, &ChatClientHandler::jsonMessageReceived,
+                   this, &LoginDialog::onJsonReceived);
         accept(); // 關閉對話框，並返回 QDialog::Accepted
     } else if (type == "login_failure") {
         QMessageBox::warning(this, "Login Failed", json["reason"].toString());
