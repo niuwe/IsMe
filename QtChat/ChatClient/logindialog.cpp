@@ -69,11 +69,10 @@ void LoginDialog::onConnected()
     ui->statusLabel->setText("Connected to server!");
     qDebug() << "LoginDialog: Connected to server!";
 
-    // 检查是否有待发送的消息
     if (!m_pendingMessage.isEmpty()) {
         qDebug() << "Sending pending message:" << m_pendingMessage;
         m_handler->sendMessage(m_pendingMessage);
-        m_pendingMessage = QJsonObject(); // 发送后立即清空，防止重发
+        m_pendingMessage = QJsonObject();
     }
 }
 

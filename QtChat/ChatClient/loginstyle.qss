@@ -2,7 +2,10 @@
 QDialog#LoginDialog {
     background-color: #2D3035; /* 深灰色背景 */
 }
-
+/*--concel focus---*/
+QPushButton:focus {
+    outline: none;
+}
 /* === 标签通用样式 === */
 QLabel {
     color: #E0E0E0; /* 浅灰色文字 */

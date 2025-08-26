@@ -46,34 +46,28 @@ void Server::onReadyRead()
     QDataStream in(clientSocket);
     in.setVersion(QDataStream::Qt_6_0);
 
-    // 引用地獲取blockSize，這樣可以直接修改map中的值
     qint32 &blockSize = m_clientBlockSizes[clientSocket];
 
-    // 使用 while 循環來處理粘包
     while (true)
     {
-        // 情況A：正在等待新的包頭
+
         if (blockSize == 0) {
-            // 檢查數據是否足以讀取一個完整的包頭
+
             if (clientSocket->bytesAvailable() < sizeof(qint32)) {
-                break; // 數據不夠，退出循環，等待下一次 readyRead
+                break;
             }
-            // 讀取包頭
+
             in >> blockSize;
         }
 
-        // 情況B：正在等待包體
-        // 檢查數據是否足以讀取一個完整的包體
         if (clientSocket->bytesAvailable() < blockSize) {
-            break; // 數據不完整，退出循環，等待下一次 readyRead
+            break;
         }
 
-        // 讀取完整的包體數據
         QByteArray jsonData = clientSocket->read(blockSize);
-        // 【關鍵】將 blockSize 重置為0，準備接收下一個包
+
         blockSize = 0;
 
-        // --- JSON解析和分發
         QJsonDocument doc = QJsonDocument::fromJson(jsonData);
         if(doc.isObject())
         {
@@ -93,45 +87,53 @@ void Server::onReadyRead()
             }
         }
 
-        // 如果緩衝區沒數據了，就退出循環
-        if (clientSocket->bytesAvailable() == 0) {
+        if (clientSocket->bytesAvailable() == 0)
+        {
             break;
         }
     }
 }
 
 
-// 處理登錄請求
 void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
 {
     QString username = json["username"].toString();
     QString password = json["password"].toString();
 
-    bool loginSuccess = m_userCredentials.contains(username) &&
+    bool credentialsValid  = m_userCredentials.contains(username) &&
                         (m_userCredentials.value(username) == password);
 
     QJsonObject response;
-    if (loginSuccess && !m_clients.contains(socket)) {
+    // Incorrect username or password.
+    if(!credentialsValid)
+    {
+        response["type"] = "login_failure";
+        response["reason"] = "Incorrect username or password.";
+        sendMessage(socket, response);
+        qDebug() << "Login failed for" << username << ": Invalid credentials.";
+    }
+    // user is already logged in
+    else if (m_loggedUsers.contains(username))
+    {
+        response["type"] = "login_failure";
+        response["reason"] = "User is already logged in.";
+        sendMessage(socket, response);
+        qDebug() << "reponse: " << response;
 
+    } else {
         m_clients[socket] = username;
         m_loggedUsers.insert(username);
         m_usernameToSocketMap[username] = socket;
 
         response["type"] = "login_success";
         response["username"] = username;
-        sendMessage(socket, response); // 只發送登入成功訊息
+        sendMessage(socket, response);
         qDebug() << "User" << username << "logged in.";
         broadcastUserList();
-    } else {
-        // 登錄失敗
-        response["type"] = "login_failure";
-        response["reason"] = "錯誤的用戶名或密碼，或用戶已登錄。";
-        sendMessage(socket, response);
-        qDebug() << "reponse: " << response;
     }
 }
 
-// 處理聊天消息轉發
+// Handling chat message
 void Server::handleChatMessage(QTcpSocket *socket, const QJsonObject &json)
 {
     QString to = json["to"].toString();
