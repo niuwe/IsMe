@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
 private slots:
     void on_sendButton_clicked();
     void onJsonReceived(const QJsonObject &json);
-    void onUserSelectionChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void onUserSelectionChanged(QListWidgetItem *item);
 
 private:
 

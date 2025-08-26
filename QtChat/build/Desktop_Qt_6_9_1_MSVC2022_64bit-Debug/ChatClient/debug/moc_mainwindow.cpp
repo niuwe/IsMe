@@ -45,8 +45,7 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         "json",
         "onUserSelectionChanged",
         "QListWidgetItem*",
-        "current",
-        "previous"
+        "item"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -57,8 +56,8 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
             { QMetaType::QJsonObject, 4 },
         }}),
         // Slot 'onUserSelectionChanged'
-        QtMocHelpers::SlotData<void(QListWidgetItem *, QListWidgetItem *)>(5, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { 0x80000000 | 6, 7 }, { 0x80000000 | 6, 8 },
+        QtMocHelpers::SlotData<void(QListWidgetItem *)>(5, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { 0x80000000 | 6, 7 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -85,7 +84,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->on_sendButton_clicked(); break;
         case 1: _t->onJsonReceived((*reinterpret_cast< std::add_pointer_t<QJsonObject>>(_a[1]))); break;
-        case 2: _t->onUserSelectionChanged((*reinterpret_cast< std::add_pointer_t<QListWidgetItem*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QListWidgetItem*>>(_a[2]))); break;
+        case 2: _t->onUserSelectionChanged((*reinterpret_cast< std::add_pointer_t<QListWidgetItem*>>(_a[1]))); break;
         default: ;
         }
     }
