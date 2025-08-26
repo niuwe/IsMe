@@ -29,7 +29,7 @@ LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     if (!(m_handler->isConnected()))
     {
         ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("1.95.165.137", 12345);
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
@@ -60,7 +60,7 @@ void LoginDialog::on_loginButton_clicked()
         onConnected();
     }else{
         ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("1.95.165.137", 12345);
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
@@ -69,11 +69,12 @@ void LoginDialog::onConnected()
     ui->statusLabel->setText("Connected to server!");
     qDebug() << "LoginDialog: Connected to server!";
 
-    // 检查是否有待发送的消息
+    // Check if there are any pending messages
     if (!m_pendingMessage.isEmpty()) {
         qDebug() << "Sending pending message:" << m_pendingMessage;
         m_handler->sendMessage(m_pendingMessage);
-        m_pendingMessage = QJsonObject(); // 发送后立即清空，防止重发
+        // Clear immediately after sending to prevent resending
+        m_pendingMessage = QJsonObject();
     }
 }
 
@@ -110,7 +111,7 @@ void LoginDialog::on_registerButton_clicked()
         onConnected();
     }else{
         ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("1.95.165.137", 12345);
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 

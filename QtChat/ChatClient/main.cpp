@@ -13,12 +13,13 @@ int main(int argc, char *argv[])
     ChatClientHandler *handler = new ChatClientHandler(socket, &a);
 
 
-    handler->connectToServer("1.95.165.137", 12345);
+    handler->connectToServer("127.0.0.1", 12345);
 
-    LoginDialog loginDialog(handler);
-    if (loginDialog.exec() == QDialog::Accepted)
+    LoginDialog *loginDialog = new LoginDialog(handler);
+
+    if (loginDialog->exec() == QDialog::Accepted)
     {
-        QString username = loginDialog.getUsername();
+        QString username = loginDialog->getUsername();
         MainWindow w(handler, username);
         w.show();
         return a.exec();

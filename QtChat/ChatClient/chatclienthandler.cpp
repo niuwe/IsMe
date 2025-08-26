@@ -65,8 +65,8 @@ void ChatClientHandler::sendMessage(const QJsonObject &json)
     QByteArray data = QJsonDocument(json).toJson(QJsonDocument::Compact);
     QDataStream out(m_tcpSocket);
     out.setVersion(QDataStream::Qt_6_0);
-    out << (qint32)data.size();
-    m_tcpSocket->write(data);
+    out << (qint32)data.size(); //send head
+    m_tcpSocket->write(data);   //send bady
 }
 
 void ChatClientHandler::onErrorOccurred(QAbstractSocket::SocketError socketError)
