@@ -10,6 +10,10 @@
 #include <QJsonArray>
 #include <QStandardPaths>
 #include <QDir>
+#include <QSslSocket>
+#include <QSslConfiguration>
+#include <QSslKey>
+#include <QSslCertificate>
 
 class Server : public QObject
 {
@@ -24,6 +28,7 @@ private slots:
 
 private:
     QTcpServer *m_tcpServer;
+    QSslConfiguration m_sslConfig;
     QMap<QTcpSocket*, QString> m_clients;
     QSet<QString> m_loggedUsers;
     QMap<QString, QString> m_userCredentials;

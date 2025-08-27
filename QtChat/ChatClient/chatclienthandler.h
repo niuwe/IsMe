@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QJsonObject>
+#include <QSslSocket>
 
 class ChatClientHandler : public QObject
 {
@@ -27,6 +28,7 @@ private slots:
 
 private:
     QTcpSocket* m_tcpSocket;
+    //QSslSocket* m_tcpSocket;
     qint32 m_currentBlockSize;
 };
 

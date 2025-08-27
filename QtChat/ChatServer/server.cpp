@@ -17,6 +17,27 @@ Server::Server(QObject *parent)
     qDebug() << "User data will be stored at:" << m_userFilePath;
     loadUsersFromFile();
 
+    // --- SSL configuration starts ---
+    QFile certFile("server.crt");
+    QFile keyFile("server.key");
+
+    if (!certFile.open(QIODevice::ReadOnly) || !keyFile.open(QIODevice::ReadOnly)) {
+        qFatal("Could not open certificate or key file for SSL!");
+        return;
+    }
+
+    QSslCertificate certificate(&certFile);
+    QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QByteArray()); // Pem格式, 无密码
+    certFile.close();
+    keyFile.close();
+
+    m_sslConfig = QSslConfiguration::defaultConfiguration();
+    m_sslConfig.setLocalCertificate(certificate);
+    m_sslConfig.setPrivateKey(key);
+    m_sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone); // 服务端不需要验证客户端证书
+    QSslConfiguration::setDefaultConfiguration(m_sslConfig);
+    // --- SSL Configuration completed ---
+
     m_tcpServer = new QTcpServer(this);
     // Whenever a new client connects, onNewConnection() will be called
     connect(m_tcpServer, &QTcpServer::newConnection, this, &Server::onNewConnection);
@@ -29,16 +50,40 @@ Server::Server(QObject *parent)
     }
 }
 
+// void Server::onNewConnection()
+// {
+//     //Returns the next pending connection as a connected QTcpSocket object.
+//     QTcpSocket *clientSocket = m_tcpServer->nextPendingConnection();
+//     if (clientSocket)
+//     {
+//         qDebug() << "Client connected:" << clientSocket->peerAddress().toString();
+
+//         connect(clientSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
+//         connect(clientSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
+//     }
+// }
+
 void Server::onNewConnection()
 {
-    // nextPendingConnection() 返回下一個掛起的連接作為一個已連接的 QTcpSocket 物件
-    QTcpSocket *clientSocket = m_tcpServer->nextPendingConnection();
-    if (clientSocket)
-    {
-        qDebug() << "Client connected:" << clientSocket->peerAddress().toString();
+    while (m_tcpServer->hasPendingConnections()) {
+        // nextPendingConnection 现在会返回一个 QSslSocket
+        QSslSocket *sslSocket = qobject_cast<QSslSocket*>(m_tcpServer->nextPendingConnection());
+        if (sslSocket) {
+            // 在信号连接前，启动服务端加密
+            connect(sslSocket, &QSslSocket::encrypted, this, [this, sslSocket](){
+                qDebug() << "Connection is encrypted. Client:" << sslSocket->peerAddress().toString();
+                // 只有在加密成功后，才连接其他信号
+                connect(sslSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
+                connect(sslSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
+            });
 
-        connect(clientSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
-        connect(clientSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
+            // 如果 SSL 握手出错
+            connect(sslSocket, &QSslSocket::sslErrors, this, [](const QList<QSslError> &errors){
+                qWarning() << "SSL Errors:" << errors;
+            });
+
+            sslSocket->startServerEncryption();
+        }
     }
 }
 
@@ -90,7 +135,6 @@ void Server::onReadyRead()
                 handleRegistration(clientSocket, json);
             }
         }
-
         if (clientSocket->bytesAvailable() == 0)
         {
             break;
@@ -128,7 +172,6 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
         m_clients[socket] = username;
         m_loggedUsers.insert(username);
         m_usernameToSocketMap[username] = socket;
-
         response["type"] = "login_success";
         response["username"] = username;
         sendMessage(socket, response);

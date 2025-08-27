@@ -4,12 +4,14 @@
 #include "chatclienthandler.h"
 #include <QApplication>
 #include <QTcpSocket>
+#include <QSslSocket>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QTcpSocket *socket = new QTcpSocket(&a);
+    // QTcpSocket *socket = new QTcpSocket(&a);
+    QSslSocket *socket = new QSslSocket(&a);
     ChatClientHandler *handler = new ChatClientHandler(socket, &a);
 
 

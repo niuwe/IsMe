@@ -11,8 +11,8 @@ LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("Login Client");
 
-    // === 加载并应用QSS样式表 ===
-    QFile styleFile(":/loginstyle.qss"); // 从资源文件加载
+    // === Load and apply QSS style sheet ===
+    QFile styleFile(":/loginstyle.qss");
     if (styleFile.open(QFile::ReadOnly)) {
         QString styleSheet = QLatin1String(styleFile.readAll());
         this->setStyleSheet(styleSheet);
@@ -124,7 +124,7 @@ void LoginDialog::on_showPasswordCheckBox_toggled(bool checked)
     }
 }
 
-// 統一處理所有收到的 JSON 消息
+// Unified processing of all received JSON messages
 void LoginDialog::onJsonReceived(const QJsonObject &json)
 {
     QString type = json["type"].toString();
@@ -134,7 +134,7 @@ void LoginDialog::onJsonReceived(const QJsonObject &json)
         qDebug()<< "LoginDialog: log in successed!";
         disconnect(m_handler, &ChatClientHandler::jsonMessageReceived,
                    this, &LoginDialog::onJsonReceived);
-        accept(); // 關閉對話框，並返回 QDialog::Accepted
+        accept(); // close diglog，and return QDialog::Accepted
     } else if (type == "login_failure") {
         QMessageBox::warning(this, "Login Failed", json["reason"].toString());
         ui->passwordLineEdit->clear();
