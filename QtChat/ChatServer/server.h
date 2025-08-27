@@ -27,11 +27,9 @@ private slots:
     void onDisconnected();
 
 private:
-    //QTcpServer *m_tcpServer;
     QSslConfiguration m_sslConfig;
     QMap<QTcpSocket*, QString> m_clients;
     QSet<QString> m_loggedUsers;
-    //QMap<QString, QString> m_userCredentials;
     QMap<QString, QTcpSocket*> m_usernameToSocketMap;
     QMap<QTcpSocket*, qint32> m_clientBlockSizes;
     QString m_userFilePath;

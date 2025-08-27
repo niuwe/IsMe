@@ -29,7 +29,8 @@ Server::Server(QObject *parent)
     }
     QSslCertificate certificate(&certFile);
     QByteArray keyData = keyFile.readAll();
-    // The constructor will automatically detect the PEM format, with no password by default.
+    // The constructor will automatically detect the PEM format,
+    // with no password by default.
     QSslKey key(keyData, QSsl::Rsa);
     certFile.close();
     keyFile.close();
@@ -38,7 +39,6 @@ Server::Server(QObject *parent)
     m_sslConfig.setLocalCertificate(certificate);
     m_sslConfig.setPrivateKey(key);
     m_sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone); // 服务端不需要验证客户端证书
-    //QSslConfiguration::setDefaultConfiguration(m_sslConfig);
     // --- SSL Configuration completed ---
 
     m_tcpServer = new SslServer(this);
@@ -55,39 +55,24 @@ Server::Server(QObject *parent)
     }
 }
 
-// void Server::onNewConnection()
-// {
-//     //Returns the next pending connection as a connected QTcpSocket object.
-//     QTcpSocket *clientSocket = m_tcpServer->nextPendingConnection();
-//     if (clientSocket)
-//     {
-//         qDebug() << "Client connected:" << clientSocket->peerAddress().toString();
-
-//         connect(clientSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
-//         connect(clientSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
-//     }
-// }
 
 void Server::onNewConnection()
 {
     while (m_tcpServer->hasPendingConnections()) {
-        // nextPendingConnection 现在会返回一个 QSslSocket
+        // now extPendingConnection return  one QSslSocket object
         QSslSocket *sslSocket = qobject_cast<QSslSocket*>(m_tcpServer->nextPendingConnection());
         if (sslSocket) {
-            // 在信号连接前，启动服务端加密
+            // Before connecting to Signal, enable server-side encryption
             connect(sslSocket, &QSslSocket::encrypted, this, [this, sslSocket](){
                 qDebug() << "Connection is encrypted. Client:" << sslSocket->peerAddress().toString();
-                // 只有在加密成功后，才连接其他信号
+                // Only after encryption is successful, connect to other signals
                 connect(sslSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
                 connect(sslSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
             });
-
-            // 如果 SSL 握手出错
+            //  SSL handshake error
             connect(sslSocket, &QSslSocket::sslErrors, this, [](const QList<QSslError> &errors){
                 qWarning() << "SSL Errors:" << errors;
             });
-
-            // sslSocket->startServerEncryption();
         }
     }
 }
@@ -104,22 +89,17 @@ void Server::onReadyRead()
 
     while (true)
     {
-
         if (blockSize == 0) {
-
             if (clientSocket->bytesAvailable() < sizeof(qint32)) {
                 break;
             }
-
             in >> blockSize;
         }
-
         if (clientSocket->bytesAvailable() < blockSize) {
             break;
         }
 
         QByteArray jsonData = clientSocket->read(blockSize);
-
         blockSize = 0;
 
         QJsonDocument doc = QJsonDocument::fromJson(jsonData);
@@ -153,21 +133,19 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
     QString username = json["username"].toString();
     QString password = json["password"].toString();
     QJsonObject response;
-    //bool credentialsValid  = m_userCredentials.contains(username) &&
-//                        (m_userCredentials.value(username) == password);
 
-    // --- 核心修改：哈希验证 ---
+    // --- Hash verification ---
     if (m_userCredentials.contains(username)) {
         QVariantMap userData = m_userCredentials.value(username).toMap();
         QString salt = userData["salt"].toString();
         QByteArray storedHash = QByteArray::fromHex(userData["hash"].toByteArray()); // 从16进制字符串恢复
 
-        // 1. 使用相同的盐，对用户提交的密码进行哈希
+        // Use the same salt to hash the password submitted by the user
         QByteArray calculatedHash = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256);
 
-        // 2. 比较哈希值是否一致
+        // Compare hash values ​​to see if they are consistent
         if (calculatedHash == storedHash) {
-            // 哈希匹配，验证成功
+            // Hash matches, verification successful
             if (m_loggedUsers.contains(username)) {
                 response["type"] = "login_failure";
                 response["reason"] = "User is already logged in.";
@@ -184,47 +162,18 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
                 broadcastUserList();
             }
         } else {
-            // 哈希不匹配，密码错误
+            // Hash mismatch, wrong password
             response["type"] = "login_failure";
-            response["reason"] = "Incorrect username or password.";
+            response["reason"] = "Incorrect password.";
             sendMessage(socket, response);
             qDebug() << "Login failed for" << username << ": Invalid credentials.";
         }
     } else {
-        // 用户名不存在
+        // Username does not exist
         response["type"] = "login_failure";
-        response["reason"] = "Can't find user.";
+        response["reason"] = "Username does not exist.";
         sendMessage(socket, response);
-        qDebug() << "Login failed for" << username << ": Invalid credentials.";
     }
-
-    // QJsonObject response;
-    // // Incorrect username or password.
-    // if(!credentialsValid)
-    // {
-    //     response["type"] = "login_failure";
-    //     response["reason"] = "Incorrect username or password.";
-    //     sendMessage(socket, response);
-    //     qDebug() << "Login failed for" << username << ": Invalid credentials.";
-    // }
-    // // user is already logged in
-    // else if (m_loggedUsers.contains(username))
-    // {
-    //     response["type"] = "login_failure";
-    //     response["reason"] = "User is already logged in.";
-    //     sendMessage(socket, response);
-    //     qDebug() << "reponse: " << response;
-
-    // } else {
-    //     m_clients[socket] = username;
-    //     m_loggedUsers.insert(username);
-    //     m_usernameToSocketMap[username] = socket;
-    //     response["type"] = "login_success";
-    //     response["username"] = username;
-    //     sendMessage(socket, response);
-    //     qDebug() << "User" << username << "logged in.";
-    //     broadcastUserList();
-    // }
 }
 
 // Handling chat message
