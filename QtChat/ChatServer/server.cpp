@@ -27,10 +27,10 @@ Server::Server(QObject *parent)
         qFatal("Could not open certificate or key file for SSL!");
         return;
     }
-
     QSslCertificate certificate(&certFile);
     QByteArray keyData = keyFile.readAll();
-    QSslKey key(keyData, QSsl::Rsa); // 构造函数会自动检测PEM格式, 默认无密码
+    // The constructor will automatically detect the PEM format, with no password by default.
+    QSslKey key(keyData, QSsl::Rsa);
     certFile.close();
     keyFile.close();
 
