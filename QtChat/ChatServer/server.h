@@ -8,6 +8,8 @@
 #include <QMap>
 #include <QSet>
 #include <QJsonArray>
+#include <QStandardPaths>
+#include <QDir>
 
 class Server : public QObject
 {
@@ -27,6 +29,7 @@ private:
     QMap<QString, QString> m_userCredentials;
     QMap<QString, QTcpSocket*> m_usernameToSocketMap;
     QMap<QTcpSocket*, qint32> m_clientBlockSizes;
+    QString m_userFilePath;
 
 private:
     void handleLogin(QTcpSocket *socket, const QJsonObject &json);
@@ -35,6 +38,8 @@ private:
     void broadcastUserList();
     void handleUserListRequest(QTcpSocket *socket);
     void handleRegistration(QTcpSocket *socket, const QJsonObject &json);
+    void saveUsersToFile() const;
+    void loadUsersFromFile();
 
 };
 

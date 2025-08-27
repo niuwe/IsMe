@@ -141,7 +141,6 @@ void MainWindow::handleUserListUpdate(const QJsonObject &json)
 
         QListWidgetItem *newItem = new QListWidgetItem(username, ui->userListWidget);
 
-
         if (username == previouslySelectedUser) {
             itemToSelect = newItem;
         }

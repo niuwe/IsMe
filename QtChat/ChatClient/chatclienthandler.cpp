@@ -44,12 +44,11 @@ void ChatClientHandler::onReadyRead()
         }
 
         QByteArray jsonData = m_tcpSocket->read(m_currentBlockSize);
-        m_currentBlockSize = 0; // 重置大小，准备接收下一个包
+        m_currentBlockSize = 0;
 
         QJsonDocument doc = QJsonDocument::fromJson(jsonData);
         if(doc.isObject())
         {
-            // 解析成功，通过信号发射出去
             emit jsonMessageReceived(doc.object());
         }
 

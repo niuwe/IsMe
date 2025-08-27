@@ -1,28 +1,32 @@
 #include "server.h"
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QDebug> // 用於在控制台輸出調試信息
+#include <QDebug>
+#include <QFile>
 
 Server::Server(QObject *parent)
     : QObject{parent}
 {
-    m_tcpServer = new QTcpServer(this);
+    QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir dir(dataPath);
+    if (!dir.exists())
+    {
+        dir.mkpath(".");
+    }
+    m_userFilePath = dataPath + "/users.json";
+    qDebug() << "User data will be stored at:" << m_userFilePath;
+    loadUsersFromFile();
 
-    // 連接 newConnection 信號到我們的槽函數
-    // 每當有新的客戶端連接進來，onNewConnection() 就會被調用
+    m_tcpServer = new QTcpServer(this);
+    // Whenever a new client connects, onNewConnection() will be called
     connect(m_tcpServer, &QTcpServer::newConnection, this, &Server::onNewConnection);
 
-    // 監聽本地所有 IP 地址的 12345 端口
-    // 如果監聽失敗，打印錯誤信息
+    // Listen to ports 12345 of all local IP addresses
     if (!m_tcpServer->listen(QHostAddress::Any, 12345)) {
         qDebug() << "Server could not start!";
     } else {
         qDebug() << "Server started on port 12345. Waiting for connections...";
     }
-
-    // 先保存兩個用戶測試使用
-    m_userCredentials["userA"] = "123";
-    m_userCredentials["userB"] = "123";
 }
 
 void Server::onNewConnection()
@@ -146,26 +150,28 @@ void Server::handleChatMessage(QTcpSocket *socket, const QJsonObject &json)
     QJsonObject messageToSend = json;
     messageToSend["from"] = from;
 
-    // O(log N) 查找，高效且简洁
+    // O(log N)
     if (m_usernameToSocketMap.contains(to)) {
         QTcpSocket *destSocket = m_usernameToSocketMap.value(to);
         sendMessage(destSocket, messageToSend);
     } else {
         qDebug() << "User" << to << "not found or offline.";
-        // (可选) 可以向发送者回发一条“用户不在线”的提示
+        QJsonObject response;
+        response["type"] = "message_failure";
+        response["reason"] = QString("%1 is already offline").arg(to);
+        sendMessage(socket, response);
     }
 }
 
-// 廣播用戶列表
+// broadcast user list
 void Server::broadcastUserList()
 {
     QJsonObject userListMessage;
     userListMessage["type"] = "user_list_update";
     userListMessage["users"] = QJsonArray::fromStringList(m_loggedUsers.values());
 
-    // 使用 constBegin() 和 constEnd()，我们不打算在循环中修改 map。
     for (auto it = m_clients.constBegin(); it != m_clients.constEnd(); ++it) {
-        // it.key() 就是我们需要的 QTcpSocket*
+        // it.key() is QTcpSocket* that we are need
         sendMessage(it.key(), userListMessage);
     }
 }
@@ -181,7 +187,7 @@ void Server::onDisconnected()
             m_loggedUsers.remove(username);
             m_usernameToSocketMap.remove(username);
             qDebug() << "User" << username << "disconnected.";
-            // 用戶下線，再次廣播用戶列表
+            // The user goes offline and broadcasts the user list again
             broadcastUserList();
         }
         clientSocket->deleteLater();
@@ -209,13 +215,10 @@ void Server::handleUserListRequest(QTcpSocket *socket)
     userListMessage["type"] = "user_list_update";
     // QSet to QList, then to QJsonArray
     userListMessage["users"] = QJsonArray::fromStringList(m_loggedUsers.values());
-
-    // 只向請求的客戶端發送完整的用戶列表
+    // Only send the full user list to the requesting client
     sendMessage(socket, userListMessage);
-    qDebug() << "Sent user list to" << m_clients.value(socket);
 }
 
-// server.cpp
 void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
 {
     QString username = json["username"].toString();
@@ -223,20 +226,65 @@ void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
 
     QJsonObject response;
 
-    // 審核邏輯：檢查 m_userCredentials 中是否已存在該使用者名稱
     if (m_userCredentials.contains(username)) {
-        // 使用者名稱已被佔用
+        // Username is already taken
         response["type"] = "registration_failure";
         response["reason"] = "This username has already been registered."
                              " Please change it.";
         qDebug() << "Registration failed for" << username << ": Username taken.";
     } else {
-        // 註冊成功，將新帳號密碼存入 QMap
+        // Registration is successful, save the new account and password
         m_userCredentials[username] = password;
         response["type"] = "registration_success";
         qDebug() << "User" << username << "registered successfully.";
-        // (可選) 在這裡將帳號密碼寫入檔案或資料庫，以便伺服器重啟後不清空
+        saveUsersToFile();
     }
 
     sendMessage(socket, response);
+}
+
+void Server::saveUsersToFile() const
+{
+    QFile file(m_userFilePath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "Could not open users file for writing:" << file.errorString();
+        return;
+    }
+
+    QJsonObject usersObject;
+    for (auto it = m_userCredentials.constBegin(); it != m_userCredentials.constEnd(); ++it) {
+        usersObject.insert(it.key(), it.value());
+    }
+
+    file.write(QJsonDocument(usersObject).toJson());
+    file.close();
+}
+
+void Server::loadUsersFromFile()
+{
+    QFile file(m_userFilePath);
+    if (!file.exists()) {
+        qDebug() << "Users file does not exist. Starting with an empty user list.";
+        return;
+    }
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open users file for reading:" << file.errorString();
+        return;
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonObject usersObject = QJsonDocument::fromJson(fileData).object();
+
+    // clear the user credentials and prepare to load form a file
+    m_userCredentials.clear();
+
+    for (auto it = usersObject.constBegin(); it != usersObject.constEnd(); ++it) {
+        if (it.value().isString()) {
+            m_userCredentials.insert(it.key(), it.value().toString());
+        }
+    }
+    qDebug() << "Loaded" << m_userCredentials.size() << "users from file.";
 }

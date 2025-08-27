@@ -29,11 +29,7 @@ LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     if (!(m_handler->isConnected()))
     {
         ui->statusLabel->setText("Connecting to server...");
-<<<<<<< HEAD
         m_handler->connectToServer("127.0.0.1", 12694);
-=======
-        m_handler->connectToServer("127.0.0.1", 12345);
->>>>>>> 72264e37dc7391754473f9c84667e8bc95cccd56
     }
 }
 
@@ -72,18 +68,11 @@ void LoginDialog::onConnected()
 {
     ui->statusLabel->setText("Connected to server!");
     qDebug() << "LoginDialog: Connected to server!";
-
-<<<<<<< HEAD
-    if (!m_pendingMessage.isEmpty()) {
-        qDebug() << "Sending pending message:" << m_pendingMessage;
-        m_handler->sendMessage(m_pendingMessage);
-=======
     // Check if there are any pending messages
     if (!m_pendingMessage.isEmpty()) {
         qDebug() << "Sending pending message:" << m_pendingMessage;
         m_handler->sendMessage(m_pendingMessage);
         // Clear immediately after sending to prevent resending
->>>>>>> 72264e37dc7391754473f9c84667e8bc95cccd56
         m_pendingMessage = QJsonObject();
     }
 }
@@ -121,11 +110,7 @@ void LoginDialog::on_registerButton_clicked()
         onConnected();
     }else{
         ui->statusLabel->setText("Connecting to server...");
-<<<<<<< HEAD
         m_handler->connectToServer("127.0.0.1", 12694);
-=======
-        m_handler->connectToServer("127.0.0.1", 12345);
->>>>>>> 72264e37dc7391754473f9c84667e8bc95cccd56
     }
 }
 
