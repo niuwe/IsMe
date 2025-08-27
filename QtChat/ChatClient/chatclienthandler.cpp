@@ -1,10 +1,11 @@
 #include "chatclienthandler.h"
 #include <QDataStream>
 #include <QJsonDocument>
+#include <QSslError>
 
-ChatClientHandler::ChatClientHandler(QTcpSocket *socket, QObject *parent)
+ChatClientHandler::ChatClientHandler(QObject *parent)
     : QObject(parent)
-    , m_tcpSocket(socket)
+    //, m_tcpSocket(socket)
     , m_currentBlockSize(0)
 {
     m_tcpSocket = new QSslSocket(this);
@@ -19,6 +20,20 @@ ChatClientHandler::ChatClientHandler(QTcpSocket *socket, QObject *parent)
 //         m_tcpSocket->connectToHost(host, port);
 //     }
 // }
+
+void ChatClientHandler::connectToServer(const QString &host, quint16 port)
+{
+    if (m_tcpSocket->state() == QAbstractSocket::UnconnectedState) {
+        // --- 关键修改 ---
+        // 对于自签名证书，客户端必须忽略SSL错误，否则连接会失败
+        // 使用 qOverload 来明确指定信号版本
+        connect(m_tcpSocket, qOverload<const QList<QSslError> &>(&QSslSocket::sslErrors),
+                m_tcpSocket, qOverload<const QList<QSslError> &>(&QSslSocket::ignoreSslErrors));
+
+        // 使用加密方式连接
+        m_tcpSocket->connectToHostEncrypted(host, port);
+    }
+}
 
 bool ChatClientHandler::isConnected() const
 {

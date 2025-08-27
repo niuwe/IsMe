@@ -10,7 +10,7 @@ class ChatClientHandler : public QObject
 {
     Q_OBJECT
 public:
-    explicit ChatClientHandler(QTcpSocket *socket, QObject *parent = nullptr);
+    explicit ChatClientHandler(QObject *parent = nullptr);
     void connectToServer(const QString &host, quint16 port);
     bool isConnected() const;
 
@@ -27,8 +27,8 @@ private slots:
     void onErrorOccurred(QAbstractSocket::SocketError socketError);
 
 private:
-    QTcpSocket* m_tcpSocket;
-    //QSslSocket* m_tcpSocket;
+    //QTcpSocket* m_tcpSocket;
+    QSslSocket* m_tcpSocket;
     qint32 m_currentBlockSize;
 };
 

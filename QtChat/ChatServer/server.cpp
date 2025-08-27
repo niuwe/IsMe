@@ -3,6 +3,9 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QFile>
+#include <QCryptographicHash>
+#include <QUuid>
+#include "sslserver.h"
 
 Server::Server(QObject *parent)
     : QObject{parent}
@@ -18,16 +21,16 @@ Server::Server(QObject *parent)
     loadUsersFromFile();
 
     // --- SSL configuration starts ---
-    QFile certFile("server.crt");
-    QFile keyFile("server.key");
-
+    QFile certFile(":/ssl/server.crt");
+    QFile keyFile(":/ssl/server.key");
     if (!certFile.open(QIODevice::ReadOnly) || !keyFile.open(QIODevice::ReadOnly)) {
         qFatal("Could not open certificate or key file for SSL!");
         return;
     }
 
     QSslCertificate certificate(&certFile);
-    QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QByteArray()); // Pem格式, 无密码
+    QByteArray keyData = keyFile.readAll();
+    QSslKey key(keyData, QSsl::Rsa); // 构造函数会自动检测PEM格式, 默认无密码
     certFile.close();
     keyFile.close();
 
@@ -35,12 +38,14 @@ Server::Server(QObject *parent)
     m_sslConfig.setLocalCertificate(certificate);
     m_sslConfig.setPrivateKey(key);
     m_sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone); // 服务端不需要验证客户端证书
-    QSslConfiguration::setDefaultConfiguration(m_sslConfig);
+    //QSslConfiguration::setDefaultConfiguration(m_sslConfig);
     // --- SSL Configuration completed ---
 
-    m_tcpServer = new QTcpServer(this);
+    m_tcpServer = new SslServer(this);
+    m_tcpServer->setSslConfiguration(m_sslConfig);
+
     // Whenever a new client connects, onNewConnection() will be called
-    connect(m_tcpServer, &QTcpServer::newConnection, this, &Server::onNewConnection);
+    connect(m_tcpServer, &SslServer::newConnection, this, &Server::onNewConnection);
 
     // Listen to ports 12345 of all local IP addresses
     if (!m_tcpServer->listen(QHostAddress::Any, 12345)) {
@@ -82,7 +87,7 @@ void Server::onNewConnection()
                 qWarning() << "SSL Errors:" << errors;
             });
 
-            sslSocket->startServerEncryption();
+            // sslSocket->startServerEncryption();
         }
     }
 }
@@ -147,37 +152,79 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
 {
     QString username = json["username"].toString();
     QString password = json["password"].toString();
-
-    bool credentialsValid  = m_userCredentials.contains(username) &&
-                        (m_userCredentials.value(username) == password);
-
     QJsonObject response;
-    // Incorrect username or password.
-    if(!credentialsValid)
-    {
+    //bool credentialsValid  = m_userCredentials.contains(username) &&
+//                        (m_userCredentials.value(username) == password);
+
+    // --- 核心修改：哈希验证 ---
+    if (m_userCredentials.contains(username)) {
+        QVariantMap userData = m_userCredentials.value(username).toMap();
+        QString salt = userData["salt"].toString();
+        QByteArray storedHash = QByteArray::fromHex(userData["hash"].toByteArray()); // 从16进制字符串恢复
+
+        // 1. 使用相同的盐，对用户提交的密码进行哈希
+        QByteArray calculatedHash = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256);
+
+        // 2. 比较哈希值是否一致
+        if (calculatedHash == storedHash) {
+            // 哈希匹配，验证成功
+            if (m_loggedUsers.contains(username)) {
+                response["type"] = "login_failure";
+                response["reason"] = "User is already logged in.";
+                sendMessage(socket, response);
+                qDebug() << "reponse: " << response;
+            } else {
+                m_clients[socket] = username;
+                m_loggedUsers.insert(username);
+                m_usernameToSocketMap[username] = socket;
+                response["type"] = "login_success";
+                response["username"] = username;
+                sendMessage(socket, response);
+                qDebug() << "User" << username << "logged in.";
+                broadcastUserList();
+            }
+        } else {
+            // 哈希不匹配，密码错误
+            response["type"] = "login_failure";
+            response["reason"] = "Incorrect username or password.";
+            sendMessage(socket, response);
+            qDebug() << "Login failed for" << username << ": Invalid credentials.";
+        }
+    } else {
+        // 用户名不存在
         response["type"] = "login_failure";
-        response["reason"] = "Incorrect username or password.";
+        response["reason"] = "Can't find user.";
         sendMessage(socket, response);
         qDebug() << "Login failed for" << username << ": Invalid credentials.";
     }
-    // user is already logged in
-    else if (m_loggedUsers.contains(username))
-    {
-        response["type"] = "login_failure";
-        response["reason"] = "User is already logged in.";
-        sendMessage(socket, response);
-        qDebug() << "reponse: " << response;
 
-    } else {
-        m_clients[socket] = username;
-        m_loggedUsers.insert(username);
-        m_usernameToSocketMap[username] = socket;
-        response["type"] = "login_success";
-        response["username"] = username;
-        sendMessage(socket, response);
-        qDebug() << "User" << username << "logged in.";
-        broadcastUserList();
-    }
+    // QJsonObject response;
+    // // Incorrect username or password.
+    // if(!credentialsValid)
+    // {
+    //     response["type"] = "login_failure";
+    //     response["reason"] = "Incorrect username or password.";
+    //     sendMessage(socket, response);
+    //     qDebug() << "Login failed for" << username << ": Invalid credentials.";
+    // }
+    // // user is already logged in
+    // else if (m_loggedUsers.contains(username))
+    // {
+    //     response["type"] = "login_failure";
+    //     response["reason"] = "User is already logged in.";
+    //     sendMessage(socket, response);
+    //     qDebug() << "reponse: " << response;
+
+    // } else {
+    //     m_clients[socket] = username;
+    //     m_loggedUsers.insert(username);
+    //     m_usernameToSocketMap[username] = socket;
+    //     response["type"] = "login_success";
+    //     response["username"] = username;
+    //     sendMessage(socket, response);
+    //     qDebug() << "User" << username << "logged in.";
+    //     broadcastUserList();
+    // }
 }
 
 // Handling chat message
@@ -277,7 +324,21 @@ void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
         qDebug() << "Registration failed for" << username << ": Username taken.";
     } else {
         // Registration is successful, save the new account and password
-        m_userCredentials[username] = password;
+        // --- 核心修改：哈希处理 ---
+        // 1. 生成一个随机的盐 (salt)
+        QString salt = QUuid::createUuid().toString();
+        // 2. 将密码和盐组合，进行SHA-256哈希
+        QByteArray hash = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256);
+
+        // 3. 将用户名、哈希值(Hex格式)、盐存入 QMap
+        // m_userCredentials 现在需要存储更复杂的数据，我们使用 QVariantMap
+        QVariantMap userData;
+        userData["hash"] = hash.toHex(); // 转换为16进制字符串存储
+        userData["salt"] = salt;
+        m_userCredentials[username] = userData;
+        // --- 修改结束 ---
+
+        //m_userCredentials[username] = password;
         response["type"] = "registration_success";
         qDebug() << "User" << username << "registered successfully.";
         saveUsersToFile();
@@ -294,10 +355,13 @@ void Server::saveUsersToFile() const
         return;
     }
 
-    QJsonObject usersObject;
-    for (auto it = m_userCredentials.constBegin(); it != m_userCredentials.constEnd(); ++it) {
-        usersObject.insert(it.key(), it.value());
-    }
+    // QJsonObject usersObject;
+    // for (auto it = m_userCredentials.constBegin(); it != m_userCredentials.constEnd(); ++it) {
+    //     usersObject.insert(it.key(), it.value());
+    // }
+
+    // 直接将 QVariantMap 转换为 QJsonObject
+    QJsonObject usersObject = QJsonObject::fromVariantMap(m_userCredentials);
 
     file.write(QJsonDocument(usersObject).toJson());
     file.close();
@@ -315,19 +379,22 @@ void Server::loadUsersFromFile()
         qWarning() << "Could not open users file for reading:" << file.errorString();
         return;
     }
-
     QByteArray fileData = file.readAll();
     file.close();
-
     QJsonObject usersObject = QJsonDocument::fromJson(fileData).object();
 
     // clear the user credentials and prepare to load form a file
     m_userCredentials.clear();
-
+    // 遍历JSON对象，将其转换为QVariantMap
     for (auto it = usersObject.constBegin(); it != usersObject.constEnd(); ++it) {
-        if (it.value().isString()) {
-            m_userCredentials.insert(it.key(), it.value().toString());
-        }
+        // 将每个用户的数据(也是一个QJsonObject)转换为QVariantMap
+        m_userCredentials.insert(it.key(), it.value().toObject().toVariantMap());
     }
     qDebug() << "Loaded" << m_userCredentials.size() << "users from file.";
+    // for (auto it = usersObject.constBegin(); it != usersObject.constEnd(); ++it) {
+    //     if (it.value().isString()) {
+    //         m_userCredentials.insert(it.key(), it.value().toString());
+    //     }
+    // }
+    // qDebug() << "Loaded" << m_userCredentials.size() << "users from file.";
 }

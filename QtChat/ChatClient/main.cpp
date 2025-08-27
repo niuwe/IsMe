@@ -11,25 +11,23 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     // QTcpSocket *socket = new QTcpSocket(&a);
-    QSslSocket *socket = new QSslSocket(&a);
-    ChatClientHandler *handler = new ChatClientHandler(socket, &a);
+    // ChatClientHandler *handler = new ChatClientHandler(socket, &a);
 
+    ChatClientHandler *handler = new ChatClientHandler(&a);
 
     handler->connectToServer("127.0.0.1", 12345);
 
-    LoginDialog *loginDialog = new LoginDialog(handler);
+    LoginDialog loginDialog(handler);
 
-    if (loginDialog->exec() == QDialog::Accepted)
+    if (loginDialog.exec() == QDialog::Accepted)
     {
-        QString username = loginDialog->getUsername();
-        delete loginDialog;
+        QString username = loginDialog.getUsername();
         MainWindow w(handler, username);
         w.show();
         return a.exec();
     }
     else
     {
-        delete loginDialog;
         return 0;
     }
 }
