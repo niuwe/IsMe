@@ -11,6 +11,9 @@ LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("Login Client");
 
+    ui->ipLineEdit->setText("127.0.0.1");
+    ui->portLineEdit->setText("12345");
+
     // === Load and apply QSS style sheet ===
     QFile styleFile(":/loginstyle.qss");
     if (styleFile.open(QFile::ReadOnly)) {
@@ -26,11 +29,11 @@ LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     connect(m_handler, &ChatClientHandler::jsonMessageReceived,
             this, &LoginDialog::onJsonReceived);
 
-    if (!(m_handler->isConnected()))
-    {
-        ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("127.0.0.1", 12345);
-    }
+    // if (!(m_handler->isConnected()))
+    // {
+    //     ui->statusLabel->setText("Connecting to server...");
+    //     m_handler->connectToServer("127.0.0.1", 12345);
+    // }
 }
 
 LoginDialog::~LoginDialog()
@@ -59,8 +62,9 @@ void LoginDialog::on_loginButton_clicked()
     {
         onConnected();
     }else{
-        ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("127.0.0.1", 12345);
+        QMessageBox::warning(this, "Login failed", "Please connect server!");
+        // ui->statusLabel->setText("Connecting to server...");
+        // m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
@@ -68,7 +72,7 @@ void LoginDialog::onConnected()
 {
     ui->statusLabel->setText("Connected to server!");
     qDebug() << "LoginDialog: Connected to server!";
-    // Check if there are any pending messages
+    //Check if there are any pending messages
     if (!m_pendingMessage.isEmpty()) {
         qDebug() << "Sending pending message:" << m_pendingMessage;
         m_handler->sendMessage(m_pendingMessage);
@@ -109,8 +113,9 @@ void LoginDialog::on_registerButton_clicked()
     {
         onConnected();
     }else{
-        ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("127.0.0.1", 12345);
+        QMessageBox::warning(this, "Registration failed", "Please connect server!");
+        // ui->statusLabel->setText("Connecting to server...");
+        // m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
@@ -146,3 +151,13 @@ void LoginDialog::onJsonReceived(const QJsonObject &json)
         QMessageBox::warning(this, "Registration Failed", json["reason"].toString());
     }
 }
+
+void LoginDialog::on_connectButton_clicked()
+{
+    m_pendingMessage = QJsonObject();
+    ui->statusLabel->setText("Connecting to server...");
+    QString ip = ui->ipLineEdit->text();
+    quint16 port = ui->portLineEdit->text().toInt();
+    m_handler->connectToServer(ip, port);
+}
+

@@ -31,6 +31,7 @@ private slots:
     void onConnected();
     void onJsonReceived(const QJsonObject &json);
     void onError(const QString &errorString);
+    void on_connectButton_clicked();
 
 private:
     Ui::LoginDialog *ui;

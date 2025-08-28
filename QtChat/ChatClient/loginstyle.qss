@@ -2,10 +2,7 @@
 QDialog#LoginDialog {
     background-color: #2D3035; /* 深灰色背景 */
 }
-/*--concel focus---*/
-QPushButton:focus {
-    outline: none;
-}
+
 /* === 标签通用样式 === */
 QLabel {
     color: #E0E0E0; /* 浅灰色文字 */
@@ -19,12 +16,20 @@ QLineEdit {
     border: 1px solid #555; /* 边框 */
     border-radius: 5px; /* 圆角 */
     padding: 8px; /* 内边距，让文字不贴边 */
-    font-size: 15px;
+    font-size: 16px;
 }
 /* 输入框获取焦点时的样式 */
 QLineEdit:focus {
     border: 1px solid #007ACC; /* 蓝色高亮边框 */
     background-color: #454950;
+}
+
+QLabel#ipLabel {
+    font-size: 16px;
+}
+
+QLabel#portLabel {
+    font-size: 16px;
 }
 
 /* === 复选框样式 (QCheckBox) === */
@@ -48,8 +53,6 @@ QCheckBox::indicator:hover {
 QCheckBox::indicator:checked {
     background-color: #007ACC; /* 变为蓝色 */
     border: 1px solid #007ACC;
-    /* (可选) 添加一个居中的白色对勾图标 */
-    image: url(:/icons/check.png);
 }
 
 /* === 按钮通用样式 === */
@@ -72,6 +75,21 @@ QPushButton#loginButton:hover {
 }
 /* 鼠标按下 */
 QPushButton#loginButton:pressed {
+    background-color: #006ABF;
+}
+
+/* === 主要按钮样式 (链接按钮) === */
+QPushButton#connectButton {
+    background-color: #007ACC; /* 蓝色背景 */
+    color: white; /* 白色文字 */
+    border: none;
+}
+/* 鼠标悬停 */
+QPushButton#connectButton:hover {
+    background-color: #008AEF;
+}
+/* 鼠标按下 */
+QPushButton#connectButton:pressed {
     background-color: #006ABF;
 }
 
