@@ -1,4 +1,4 @@
-QT       += core gui widgets network
+QT += core gui widgets network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,21 +9,21 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    chatclienthandler.cpp \
-    historymanager.cpp \
-    logindialog.cpp \
-    main.cpp \
-    mainwindow.cpp
+    source/chatclienthandler.cpp \
+    source/historymanager.cpp \
+    source/logindialog.cpp \
+    source/main.cpp \
+    source/mainwindow.cpp
 
 HEADERS += \
-    chatclienthandler.h \
-    historymanager.h \
-    logindialog.h \
-    mainwindow.h
+    header/chatclienthandler.h \
+    header/historymanager.h \
+    header/logindialog.h \
+    header/mainwindow.h
 
 FORMS += \
-    logindialog.ui \
-    mainwindow.ui
+    ui/logindialog.ui \
+    ui/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -34,3 +34,7 @@ RESOURCES += \
     qss.qrc
 
 DISTFILES +=
+
+INCLUDEPATH += $$PWD/header
+
+DEPENDPATH += $$PWD/header

@@ -29,7 +29,7 @@ LoginDialog::LoginDialog(ChatClientHandler *handler, QWidget *parent)
     if (!(m_handler->isConnected()))
     {
         ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("127.0.0.1", 12694);
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 
@@ -110,7 +110,7 @@ void LoginDialog::on_registerButton_clicked()
         onConnected();
     }else{
         ui->statusLabel->setText("Connecting to server...");
-        m_handler->connectToServer("127.0.0.1", 12694);
+        m_handler->connectToServer("127.0.0.1", 12345);
     }
 }
 

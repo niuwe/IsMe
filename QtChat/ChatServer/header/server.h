@@ -1,6 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
-
+#include "sslserver.h"
 #include <QObject>
 #include <QTcpServer>
 #include <QJsonDocument>
@@ -22,19 +22,20 @@ public:
     explicit Server(QObject *parent = nullptr);
 
 private slots:
-    void onNewConnection();    // 處理新的客戶端連接
-    void onReadyRead();        // 處理收到的數據
-    void onDisconnected();     // 處理客戶端斷開連接
+    void onNewConnection();
+    void onReadyRead();
+    void onDisconnected();
 
 private:
-    QTcpServer *m_tcpServer;
     QSslConfiguration m_sslConfig;
     QMap<QTcpSocket*, QString> m_clients;
     QSet<QString> m_loggedUsers;
-    QMap<QString, QString> m_userCredentials;
     QMap<QString, QTcpSocket*> m_usernameToSocketMap;
     QMap<QTcpSocket*, qint32> m_clientBlockSizes;
     QString m_userFilePath;
+    QVariantMap m_userCredentials;
+    //QMap<QString, QVariant> m_userCredentials;
+    SslServer *m_tcpServer;
 
 private:
     void handleLogin(QTcpSocket *socket, const QJsonObject &json);

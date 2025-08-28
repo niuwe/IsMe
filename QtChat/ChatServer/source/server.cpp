@@ -3,6 +3,9 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QFile>
+#include <QCryptographicHash>
+#include <QUuid>
+#include "sslserver.h"
 
 Server::Server(QObject *parent)
     : QObject{parent}
@@ -18,29 +21,28 @@ Server::Server(QObject *parent)
     loadUsersFromFile();
 
     // --- SSL configuration starts ---
-    QFile certFile("server.crt");
-    QFile keyFile("server.key");
-
+    QFile certFile(":/server.crt");
+    QFile keyFile(":/server.key");
     if (!certFile.open(QIODevice::ReadOnly) || !keyFile.open(QIODevice::ReadOnly)) {
         qFatal("Could not open certificate or key file for SSL!");
         return;
     }
-
     QSslCertificate certificate(&certFile);
-    QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QByteArray()); // Pem格式, 无密码
+    QByteArray keyData = keyFile.readAll();
+    // The constructor will automatically detect the PEM format,
+    // with no password by default.
+    QSslKey key(keyData, QSsl::Rsa);
     certFile.close();
     keyFile.close();
 
     m_sslConfig = QSslConfiguration::defaultConfiguration();
     m_sslConfig.setLocalCertificate(certificate);
     m_sslConfig.setPrivateKey(key);
-    m_sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone); // 服务端不需要验证客户端证书
-    QSslConfiguration::setDefaultConfiguration(m_sslConfig);
+    m_sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
     // --- SSL Configuration completed ---
 
-    m_tcpServer = new QTcpServer(this);
-    // Whenever a new client connects, onNewConnection() will be called
-    connect(m_tcpServer, &QTcpServer::newConnection, this, &Server::onNewConnection);
+    m_tcpServer = new SslServer(this);
+    m_tcpServer->setSslConfiguration(m_sslConfig);
 
     // Listen to ports 12345 of all local IP addresses
     if (!m_tcpServer->listen(QHostAddress::Any, 12345)) {
@@ -48,41 +50,29 @@ Server::Server(QObject *parent)
     } else {
         qDebug() << "Server started on port 12345. Waiting for connections...";
     }
+
+    // Whenever a new client connects, onNewConnection() will be called
+    connect(m_tcpServer, &SslServer::newConnection, this, &Server::onNewConnection);
 }
 
-// void Server::onNewConnection()
-// {
-//     //Returns the next pending connection as a connected QTcpSocket object.
-//     QTcpSocket *clientSocket = m_tcpServer->nextPendingConnection();
-//     if (clientSocket)
-//     {
-//         qDebug() << "Client connected:" << clientSocket->peerAddress().toString();
-
-//         connect(clientSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
-//         connect(clientSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
-//     }
-// }
 
 void Server::onNewConnection()
 {
     while (m_tcpServer->hasPendingConnections()) {
-        // nextPendingConnection 现在会返回一个 QSslSocket
+        // now extPendingConnection return  one QSslSocket object
         QSslSocket *sslSocket = qobject_cast<QSslSocket*>(m_tcpServer->nextPendingConnection());
         if (sslSocket) {
-            // 在信号连接前，启动服务端加密
+            // Before connecting to Signal, enable server-side encryption
             connect(sslSocket, &QSslSocket::encrypted, this, [this, sslSocket](){
                 qDebug() << "Connection is encrypted. Client:" << sslSocket->peerAddress().toString();
-                // 只有在加密成功后，才连接其他信号
+                // Only after encryption is successful, connect to other signals
                 connect(sslSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
                 connect(sslSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
             });
-
-            // 如果 SSL 握手出错
+            // SSL handshake error
             connect(sslSocket, &QSslSocket::sslErrors, this, [](const QList<QSslError> &errors){
                 qWarning() << "SSL Errors:" << errors;
             });
-
-            sslSocket->startServerEncryption();
         }
     }
 }
@@ -96,25 +86,19 @@ void Server::onReadyRead()
     in.setVersion(QDataStream::Qt_6_0);
 
     qint32 &blockSize = m_clientBlockSizes[clientSocket];
-
     while (true)
     {
-
         if (blockSize == 0) {
-
             if (clientSocket->bytesAvailable() < sizeof(qint32)) {
                 break;
             }
-
             in >> blockSize;
         }
-
         if (clientSocket->bytesAvailable() < blockSize) {
             break;
         }
 
         QByteArray jsonData = clientSocket->read(blockSize);
-
         blockSize = 0;
 
         QJsonDocument doc = QJsonDocument::fromJson(jsonData);
@@ -147,36 +131,48 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
 {
     QString username = json["username"].toString();
     QString password = json["password"].toString();
-
-    bool credentialsValid  = m_userCredentials.contains(username) &&
-                        (m_userCredentials.value(username) == password);
-
     QJsonObject response;
-    // Incorrect username or password.
-    if(!credentialsValid)
-    {
-        response["type"] = "login_failure";
-        response["reason"] = "Incorrect username or password.";
-        sendMessage(socket, response);
-        qDebug() << "Login failed for" << username << ": Invalid credentials.";
-    }
-    // user is already logged in
-    else if (m_loggedUsers.contains(username))
-    {
-        response["type"] = "login_failure";
-        response["reason"] = "User is already logged in.";
-        sendMessage(socket, response);
-        qDebug() << "reponse: " << response;
 
+    // --- Hash verification ---
+    if (m_userCredentials.contains(username)) {
+        QVariantMap userData = m_userCredentials.value(username).toMap();
+        QString salt = userData["salt"].toString();
+        // Recover from hexadecimal string
+        QByteArray storedHash = QByteArray::fromHex(userData["hash"].toByteArray());
+
+        // Use the same salt to hash the password submitted by the user
+        QByteArray calculatedHash = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256);
+
+        // Compare hash values ​​to see if they are consistent
+        if (calculatedHash == storedHash) {
+            // Hash matches, verification successful
+            if (m_loggedUsers.contains(username)) {
+                response["type"] = "login_failure";
+                response["reason"] = "User is already logged in.";
+                sendMessage(socket, response);
+                qDebug() << "reponse: " << response;
+            } else {
+                m_clients[socket] = username;
+                m_loggedUsers.insert(username);
+                m_usernameToSocketMap[username] = socket;
+                response["type"] = "login_success";
+                response["username"] = username;
+                sendMessage(socket, response);
+                qDebug() << "User" << username << "logged in.";
+                broadcastUserList();
+            }
+        } else {
+            // Hash mismatch, wrong password
+            response["type"] = "login_failure";
+            response["reason"] = "Incorrect password.";
+            sendMessage(socket, response);
+            qDebug() << "Login failed for" << username << ": Invalid credentials.";
+        }
     } else {
-        m_clients[socket] = username;
-        m_loggedUsers.insert(username);
-        m_usernameToSocketMap[username] = socket;
-        response["type"] = "login_success";
-        response["username"] = username;
+        // Username does not exist
+        response["type"] = "login_failure";
+        response["reason"] = "Username does not exist.";
         sendMessage(socket, response);
-        qDebug() << "User" << username << "logged in.";
-        broadcastUserList();
     }
 }
 
@@ -246,8 +242,6 @@ void Server::sendMessage(QTcpSocket *socket, const QJsonObject &json)
     QDataStream stream(&header, QIODevice::WriteOnly);
     qint32 dataSize = data.size();
     stream << dataSize;
-
-    qDebug() << "sended message is:" << json;
     socket->write(header);
     socket->write(data);
 }
@@ -277,7 +271,17 @@ void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
         qDebug() << "Registration failed for" << username << ": Username taken.";
     } else {
         // Registration is successful, save the new account and password
-        m_userCredentials[username] = password;
+        // generate a random salt
+        QString salt = QUuid::createUuid().toString();
+        // Combine the password and salt
+        QByteArray hash = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256);
+
+        // Store the username, hash value (Hex format), and salt into QMap
+        QVariantMap userData;
+        // Convert to hexadecimal string for storage
+        userData["hash"] = hash.toHex();
+        userData["salt"] = salt;
+        m_userCredentials[username] = userData;
         response["type"] = "registration_success";
         qDebug() << "User" << username << "registered successfully.";
         saveUsersToFile();
@@ -285,6 +289,7 @@ void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
 
     sendMessage(socket, response);
 }
+
 
 void Server::saveUsersToFile() const
 {
@@ -294,10 +299,8 @@ void Server::saveUsersToFile() const
         return;
     }
 
-    QJsonObject usersObject;
-    for (auto it = m_userCredentials.constBegin(); it != m_userCredentials.constEnd(); ++it) {
-        usersObject.insert(it.key(), it.value());
-    }
+    // QVariantMap convert to QJsonObject
+    QJsonObject usersObject = QJsonObject::fromVariantMap(m_userCredentials);
 
     file.write(QJsonDocument(usersObject).toJson());
     file.close();
@@ -315,19 +318,13 @@ void Server::loadUsersFromFile()
         qWarning() << "Could not open users file for reading:" << file.errorString();
         return;
     }
-
     QByteArray fileData = file.readAll();
     file.close();
-
     QJsonObject usersObject = QJsonDocument::fromJson(fileData).object();
 
     // clear the user credentials and prepare to load form a file
     m_userCredentials.clear();
-
     for (auto it = usersObject.constBegin(); it != usersObject.constEnd(); ++it) {
-        if (it.value().isString()) {
-            m_userCredentials.insert(it.key(), it.value().toString());
-        }
+        m_userCredentials.insert(it.key(), it.value().toObject().toVariantMap());
     }
-    qDebug() << "Loaded" << m_userCredentials.size() << "users from file.";
 }

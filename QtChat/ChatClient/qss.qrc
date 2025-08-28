@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>loginstyle.qss</file>
         <file>mainwindowstyle.qss</file>
+        <file>rootCA.crt</file>
     </qresource>
 </RCC>
