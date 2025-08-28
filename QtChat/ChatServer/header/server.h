@@ -34,6 +34,7 @@ private:
     QMap<QTcpSocket*, qint32> m_clientBlockSizes;
     QString m_userFilePath;
     QVariantMap m_userCredentials;
+    //QMap<QString, QVariant> m_userCredentials;
     SslServer *m_tcpServer;
 
 private:

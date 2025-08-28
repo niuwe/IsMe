@@ -21,8 +21,8 @@ Server::Server(QObject *parent)
     loadUsersFromFile();
 
     // --- SSL configuration starts ---
-    QFile certFile(":/ssl/server.crt");
-    QFile keyFile(":/ssl/server.key");
+    QFile certFile(":/server.crt");
+    QFile keyFile(":/server.key");
     if (!certFile.open(QIODevice::ReadOnly) || !keyFile.open(QIODevice::ReadOnly)) {
         qFatal("Could not open certificate or key file for SSL!");
         return;
@@ -38,14 +38,11 @@ Server::Server(QObject *parent)
     m_sslConfig = QSslConfiguration::defaultConfiguration();
     m_sslConfig.setLocalCertificate(certificate);
     m_sslConfig.setPrivateKey(key);
-    m_sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone); // 服务端不需要验证客户端证书
+    m_sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
     // --- SSL Configuration completed ---
 
     m_tcpServer = new SslServer(this);
     m_tcpServer->setSslConfiguration(m_sslConfig);
-
-    // Whenever a new client connects, onNewConnection() will be called
-    connect(m_tcpServer, &SslServer::newConnection, this, &Server::onNewConnection);
 
     // Listen to ports 12345 of all local IP addresses
     if (!m_tcpServer->listen(QHostAddress::Any, 12345)) {
@@ -53,6 +50,9 @@ Server::Server(QObject *parent)
     } else {
         qDebug() << "Server started on port 12345. Waiting for connections...";
     }
+
+    // Whenever a new client connects, onNewConnection() will be called
+    connect(m_tcpServer, &SslServer::newConnection, this, &Server::onNewConnection);
 }
 
 
@@ -69,7 +69,7 @@ void Server::onNewConnection()
                 connect(sslSocket, &QTcpSocket::readyRead, this, &Server::onReadyRead);
                 connect(sslSocket, &QTcpSocket::disconnected, this, &Server::onDisconnected);
             });
-            //  SSL handshake error
+            // SSL handshake error
             connect(sslSocket, &QSslSocket::sslErrors, this, [](const QList<QSslError> &errors){
                 qWarning() << "SSL Errors:" << errors;
             });
@@ -86,7 +86,6 @@ void Server::onReadyRead()
     in.setVersion(QDataStream::Qt_6_0);
 
     qint32 &blockSize = m_clientBlockSizes[clientSocket];
-
     while (true)
     {
         if (blockSize == 0) {
@@ -138,7 +137,8 @@ void Server::handleLogin(QTcpSocket *socket, const QJsonObject &json)
     if (m_userCredentials.contains(username)) {
         QVariantMap userData = m_userCredentials.value(username).toMap();
         QString salt = userData["salt"].toString();
-        QByteArray storedHash = QByteArray::fromHex(userData["hash"].toByteArray()); // 从16进制字符串恢复
+        // Recover from hexadecimal string
+        QByteArray storedHash = QByteArray::fromHex(userData["hash"].toByteArray());
 
         // Use the same salt to hash the password submitted by the user
         QByteArray calculatedHash = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256);
@@ -242,8 +242,6 @@ void Server::sendMessage(QTcpSocket *socket, const QJsonObject &json)
     QDataStream stream(&header, QIODevice::WriteOnly);
     qint32 dataSize = data.size();
     stream << dataSize;
-
-    qDebug() << "sended message is:" << json;
     socket->write(header);
     socket->write(data);
 }
@@ -273,21 +271,17 @@ void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
         qDebug() << "Registration failed for" << username << ": Username taken.";
     } else {
         // Registration is successful, save the new account and password
-        // --- 核心修改：哈希处理 ---
-        // 1. 生成一个随机的盐 (salt)
+        // generate a random salt
         QString salt = QUuid::createUuid().toString();
-        // 2. 将密码和盐组合，进行SHA-256哈希
+        // Combine the password and salt
         QByteArray hash = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256);
 
-        // 3. 将用户名、哈希值(Hex格式)、盐存入 QMap
-        // m_userCredentials 现在需要存储更复杂的数据，我们使用 QVariantMap
+        // Store the username, hash value (Hex format), and salt into QMap
         QVariantMap userData;
-        userData["hash"] = hash.toHex(); // 转换为16进制字符串存储
+        // Convert to hexadecimal string for storage
+        userData["hash"] = hash.toHex();
         userData["salt"] = salt;
         m_userCredentials[username] = userData;
-        // --- 修改结束 ---
-
-        //m_userCredentials[username] = password;
         response["type"] = "registration_success";
         qDebug() << "User" << username << "registered successfully.";
         saveUsersToFile();
@@ -295,6 +289,7 @@ void Server::handleRegistration(QTcpSocket *socket, const QJsonObject &json)
 
     sendMessage(socket, response);
 }
+
 
 void Server::saveUsersToFile() const
 {
@@ -304,12 +299,7 @@ void Server::saveUsersToFile() const
         return;
     }
 
-    // QJsonObject usersObject;
-    // for (auto it = m_userCredentials.constBegin(); it != m_userCredentials.constEnd(); ++it) {
-    //     usersObject.insert(it.key(), it.value());
-    // }
-
-    // 直接将 QVariantMap 转换为 QJsonObject
+    // QVariantMap convert to QJsonObject
     QJsonObject usersObject = QJsonObject::fromVariantMap(m_userCredentials);
 
     file.write(QJsonDocument(usersObject).toJson());
@@ -334,16 +324,7 @@ void Server::loadUsersFromFile()
 
     // clear the user credentials and prepare to load form a file
     m_userCredentials.clear();
-    // 遍历JSON对象，将其转换为QVariantMap
     for (auto it = usersObject.constBegin(); it != usersObject.constEnd(); ++it) {
-        // 将每个用户的数据(也是一个QJsonObject)转换为QVariantMap
         m_userCredentials.insert(it.key(), it.value().toObject().toVariantMap());
     }
-    qDebug() << "Loaded" << m_userCredentials.size() << "users from file.";
-    // for (auto it = usersObject.constBegin(); it != usersObject.constEnd(); ++it) {
-    //     if (it.value().isString()) {
-    //         m_userCredentials.insert(it.key(), it.value().toString());
-    //     }
-    // }
-    // qDebug() << "Loaded" << m_userCredentials.size() << "users from file.";
 }

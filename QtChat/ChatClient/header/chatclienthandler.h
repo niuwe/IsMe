@@ -27,7 +27,6 @@ private slots:
     void onErrorOccurred(QAbstractSocket::SocketError socketError);
 
 private:
-    //QTcpSocket* m_tcpSocket;
     QSslSocket* m_tcpSocket;
     qint32 m_currentBlockSize;
 };

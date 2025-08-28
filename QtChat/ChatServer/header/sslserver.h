@@ -13,7 +13,7 @@ public:
     void setSslConfiguration(const QSslConfiguration &config);
 
 protected:
-    // 重寫這個方法是關鍵
+
     void incomingConnection(qintptr socketDescriptor) override;
 
 private:
