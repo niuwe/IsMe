@@ -152,7 +152,11 @@ QStatusBar {
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="userListWidget"/>
+         <widget class="QListWidget" name="userListWidget">
+          <property name="focusPolicy">
+           <enum>Qt::FocusPolicy::NoFocus</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

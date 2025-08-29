@@ -38,12 +38,20 @@ QLineEdit {
     border: 1px solid #555; /* 边框 */
     border-radius: 5px; /* 圆角 */
     padding: 8px; /* 内边距，让文字不贴边 */
-    font-size: 15px;
+    font-size: 16px;
 }
 /* 输入框获取焦点时的样式 */
 QLineEdit:focus {
     border: 1px solid #007ACC; /* 蓝色高亮边框 */
     background-color: #454950;
+}
+
+QLabel#ipLabel {
+    font-size: 16px;
+}
+
+QLabel#portLabel {
+    font-size: 16px;
 }
 
 /* === 复选框样式 (QCheckBox) === */
@@ -67,8 +75,6 @@ QCheckBox::indicator:hover {
 QCheckBox::indicator:checked {
     background-color: #007ACC; /* 变为蓝色 */
     border: 1px solid #007ACC;
-    /* (可选) 添加一个居中的白色对勾图标 */
-    image: url(:/icons/check.png); 
 }
 
 /* === 按钮通用样式 === */
@@ -94,6 +100,21 @@ QPushButton#loginButton:pressed {
     background-color: #006ABF;
 }
 
+/* === 主要按钮样式 (链接按钮) === */
+QPushButton#connectButton {
+    background-color: #007ACC; /* 蓝色背景 */
+    color: white; /* 白色文字 */
+    border: none;
+}
+/* 鼠标悬停 */
+QPushButton#connectButton:hover {
+    background-color: #008AEF;
+}
+/* 鼠标按下 */
+QPushButton#connectButton:pressed {
+    background-color: #006ABF;
+}
+
 /* === 次要按钮样式 (注册按钮) === */
 QPushButton#registerButton {
     background-color: transparent; /* 透明背景 */
@@ -116,13 +137,14 @@ QPushButton#registerButton:pressed {
 QLabel#statusLabel {
     color: #A0A0A0; /* 更暗的灰色，不那么显眼 */
     font-style: italic;
-}</string>
+}
+</string>
   </property>
   <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>210</y>
+     <y>200</y>
      <width>331</width>
      <height>42</height>
     </rect>
@@ -136,13 +158,28 @@ QLabel#statusLabel {
     </property>
     <item>
      <widget class="QPushButton" name="loginButton">
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
       <property name="text">
        <string>Log in</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="registerButton">
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
       <property name="text">
        <string>register</string>
       </property>
@@ -154,8 +191,8 @@ QLabel#statusLabel {
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>290</y>
-     <width>461</width>
+     <y>310</y>
+     <width>471</width>
      <height>26</height>
     </rect>
    </property>
@@ -199,13 +236,13 @@ QLabel#statusLabel {
        </font>
       </property>
       <property name="cursor">
-       <cursorShape>BlankCursor</cursorShape>
+       <cursorShape>ArrowCursor</cursorShape>
       </property>
       <property name="frameShape">
        <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <property name="text">
-       <string/>
+       <string>Please connect server</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
@@ -218,7 +255,7 @@ QLabel#statusLabel {
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>50</y>
+     <y>40</y>
      <width>331</width>
      <height>151</height>
     </rect>
@@ -256,6 +293,86 @@ QLabel#statusLabel {
       </property>
       <property name="text">
        <string>show password</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>260</y>
+     <width>471</width>
+     <height>42</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,3,1,2,1">
+    <property name="spacing">
+     <number>12</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="ipLabel">
+      <property name="font">
+       <font>
+        <family>黑体</family>
+        <pointsize>-1</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Ip:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="ipLineEdit"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="portLabel">
+      <property name="font">
+       <font>
+        <family>黑体</family>
+        <pointsize>-1</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Port:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="portLineEdit"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="connectButton">
+      <property name="font">
+       <font>
+        <pointsize>-1</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>connect</string>
       </property>
      </widget>
     </item>
